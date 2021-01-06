@@ -1,0 +1,271 @@
+/**************************************************/
+/*                                   Body and Wrapper                             */
+/**************************************************/
+
+
+#content_body {
+background: #000099 url(images/back.png) top center repeat-x; 
+margin: 0;
+padding: 0;
+font: normal 8pt/13pt verdana, arial,sans-serif;
+}
+
+
+#wrapper {
+margin: 0 auto;
+width: 800px;
+padding: 0;
+text-align: left;
+}
+
+/**************************************************/
+/*                                       Top Piece                                      
+
+  */
+/**************************************************/
+
+#top {
+background: url(images/bgtop.png) top center no-repeat; 
+width: 800px;
+height: 78px;
+}
+
+/**************************************************/
+/*                                       Content                                        
+
+     
+another wrapper that holds all the content                              */
+/**************************************************/
+
+#content {
+background: url(images/bgmiddle.png) center repeat-y; 
+width: 766px;
+height: 100%;
+padding: 0px 17px 0px 17px;
+}
+
+/**************************************************/
+/*                               All the content                                        
+
+*/
+/**************************************************/
+
+#header {
+background: url(images/header.png) top center no-repeat; 
+width: 746px;
+height: 106px;
+margin: 0px 0px 10px 0px;
+padding: 60px 0px 0px 20px;
+color: white;
+font-size: 50px;
+text-align: left;
+}
+
+._table {
+/*width: 100%;
+height: 106px; */
+margin-left: 10px;
+}
+
+._table th {
+font-size: 18px;
+color: #1c5d91;
+/*text-align: left;
+padding: 10px 10px 10px 10px; */
+}
+
+._table td {
+font-size: 14px;
+color: #1c5d91;
+}
+
+._table2 {
+/*width: 100%;*/
+/*height: 106px;*/
+margin-left: 0px;
+}
+
+._table2 th {
+font-size: 16px;
+color: #1c5d91;
+text-align: left;
+padding: 0px 0px 0px 3px;
+}
+
+._table2 td {
+font-size: 14px;
+color: #1c5d91;
+padding: 0px 0px 0px 3px;
+}
+
+.p_head {
+font-size: 20px;
+color: #1c5d91;
+padding: 5px 0px 0px 10px;
+}
+
+.p_body {
+font-size: 14px;
+color: #1c5d91;
+padding: 0px 0px 0px 5px;
+}
+
+.p_space {
+padding: 20px 0px 0px 20px;
+}
+
+#main {
+padding: 10px 0px 0px 10px;
+}
+
+/*                    Menu                   */
+.menu {
+width: 180px;
+height: 100%;
+margin-left: 0px;
+margin-right: 0px;
+float: left;
+text-align: left;
+}
+
+.menu li a {
+display: block;
+padding: 10px 0px 0px 10px;
+height: 20px;
+text-decoration: none;
+text-align: left;
+}	
+	
+.menu li a:link, #menu li a:visited {
+color: navy;
+display: block;
+/* background:  url(images/off.png) top center no-repeat; */
+padding: 10px 0 0 10px;
+height: 20px;
+text-align: left;
+}
+	
+.menu li a:hover {
+color: blue;
+/* background:  url(images/on.png) top center no-repeat; */
+display: block;
+padding: 10px 0 0 10px;
+height: 20px;
+text-align: left;
+}	
+
+.menu ul {
+list-style: none;
+margin: 0px;
+padding: 0px 0px 0px 10px;
+text-indent: 0px;
+text-align: left;
+}
+
+.scrollwindow {
+overflow: auto;
+height: 100px;
+width: 100%;
+padding: 0;
+}
+
+#stuff {
+background:  url(images/texttop.png) top left no-repeat;
+width: 520px;
+margin: 0px 0px 0px 220px;
+padding-top: 55px;
+border: 2px navy;
+}
+
+img {
+border: none;
+} 
+
+/*************
+  Collapsible fieldset
+**************/
+fieldset {
+margin: 1em 0;
+padding: 1em;
+border: 1px solid #d9eaf5;
+}
+
+fieldset legend {
+display: block;
+font-size: 20px;
+color: #1c5d91;
+font-weight: bold;
+}
+
+fieldset.collapsed {
+background: transparent;
+padding-top: 0;
+padding-bottom: .6em;
+}
+
+fieldset.collapsible legend a {
+padding-left: 2em;
+background: url(images/menu-expanded.gif) no-repeat 0% 50%
+}
+
+fieldset.collapsed legend a {
+background: url(images/menu-collapsed.gif) no-repeat 0% 50%;
+}
+
+/****************************************************
+   Suggestion List
+*****************************************************/
+.suggestion_list
+{
+ background: white;
+ border: 1px solid;
+ padding: 4px;
+}
+
+.suggestion_list ul
+{
+ padding: 0;
+ margin: 0;
+ list-style-type: none;
+}
+
+.suggestion_list a
+{
+ text-decoration: none;
+ color: navy;
+}
+
+.suggestion_list .selected
+{
+ background: navy;
+ color: white;
+}
+
+.suggestion_list .selected a
+{
+ color: white;
+}
+
+#autosuggest
+{
+ display: none;
+}
+
+
+.nav_content {
+	display: none;
+}
+
+/**************************************************/
+/*                                       Bottom                                         
+
+    */
+/**************************************************/
+
+#bottom {
+background: url(images/bgbottom.png) bottom center no-repeat; 
+width: 800px;
+height: 50px;
+}
+
+
