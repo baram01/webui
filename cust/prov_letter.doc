@@ -1,0 +1,134 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 14 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";}
+p.msochpdefault, li.msochpdefault, div.msochpdefault
+	{mso-style-name:msochpdefault;
+	margin-right:0in;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Calibri","sans-serif";}
+p.msopapdefault, li.msopapdefault, div.msopapdefault
+	{mso-style-name:msopapdefault;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+.MsoChpDefault
+	{font-size:10.0pt;
+	font-family:"Calibri","sans-serif";}
+.MsoPapDefault
+	{margin-bottom:10.0pt;
+	line-height:115%;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+</head>
+
+<body lang=EN-US link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<p class=MsoNormal><img src="cid:##LOGO##" alt="cid:##LOGO##"></p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<table class=MsoNormalTable border=0 cellspacing=0 cellpadding=0
+ style='border-collapse:collapse'>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>Dear ##FIRSTNAME##,</p>
+  <p class=MsoNormal>&nbsp;</p>
+ </tr>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>You have either requested a TACACS account or someone
+  has requested one for you.&nbsp; This e-mail contains your account information. Please retain this for future reference.</p>
+  <p class=MsoNormal><b><span style='color:#1F497D'>&nbsp;</span></b></p>
+  <p class=MsoNormal>Before accessing the network devices for the first time, please open <a href="##TACACS_WEB##">##TACACS_WEB##</a> while you are connected to ##COMPANY_NAME## network.</p>
+  <p class=MsoNormal>Click on Change Password</p>
+  <p class=MsoNormal>Enter your Username which is <span style='color:#1F497D'>##USERNAME##</span></p>
+  <p class=MsoNormal>Your temporary password is <span style='color:#1F497D'>##TEMP_PASSWORD##</span></p>
+  <p class=MsoNormal>Enter New password twice.  <span style='color:#1F497D'>**Your password must meet this criteria - minimum ##PASS_SIZE## characters, ##PASS_UPPER## Upper case, ##PASS_LOWER## Lower case, ##PASS_NUM## Number and ##PASS_SPECIAL## Special.</span></p>
+  <p class=MsoNormal>Click Change</p>
+  <p class=MsoNormal>&nbsp;</p>
+ </tr>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>Once password change, repeat to change enable password as follows:</p>
+  <p class=MsoNormal>Enter your Username</p>
+  <p class=MsoNormal>Enter your new password</p>
+  <p class=MsoNormal>Change the dropdown to enable</p>
+  <p class=MsoNormal>Ener your Enable password twice. **It can be the same as your new password</p>
+  <p class=MsoNormal>Click Change</p>
+  <p class=MsoNormal>&nbsp;</p>
+ </tr>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>**You do not need to verify your password since you used it to change your Enable password**</p>
+  <p class=MsoNormal>&nbsp;</p>
+  <p class=MsoNormal>**Passwords needs to be changed every ##PASS_EXPIRE## days.  Please put ##TACACS_WEB## in your favorites since you will need to use it every ##PASS_EXPIRE## days.</p>
+  <p class=MsoNormal>TACACS system tracks every command you enter while you are connected to a network device.</p>
+  <p class=MsoNormal>&nbsp;</p>
+ </tr>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>**DO NOT TRY TO LOG INTO <a href="##TACACS_WEB##">##TACACS_WEB##</a>. THIS SITE IS ONLY FOR ADMINISTRATIONS.**</p>
+  <p class=MsoNormal>&nbsp;</p>
+ </tr>
+ <tr>
+  <td width=737 valign=top style='width:553.1pt;padding:0in 5.4pt 0in 5.4pt'>
+  <p class=MsoNormal>Sincerely,</p>
+  <p class=MsoNormal>TACACS Administrative team</p>
+  <p class=MsoNormal>##COMPANY_NAME##</p>
+ </tr>
+</table>
+</div>
+
+</body>
+
+</html>

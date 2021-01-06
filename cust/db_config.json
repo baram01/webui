@@ -1,0 +1,1 @@
+{"redundancy":0, "type":"mysqli", "hosts":["127.0.0.1"], "name":"tacacs", "uid":"tacacs", "pass":"tac_plus"}
