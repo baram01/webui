@@ -83,7 +83,7 @@ $( function() {
           }
         } );
       },
-      minLength: 2,
+      minLength: 0,
       select: function( event, ui ) {
         $( "#value" ).val( ui.item.value );
         return false;

@@ -109,7 +109,11 @@ case "admin":
 case "attr_value":
 	$fields = "value, option";
 	if (isset($term)) {
-		$where = "WHERE option RLIKE '".$term.".*'";
+		if (is_numeric($term)) {
+			$where = "WHERE value = ".$term;
+		} else {
+			$where = "WHERE option RLIKE '".$term.".*'";
+		}
 		if (isset($vid)) {
 			if ($vid) {
 				$where .= " AND (vid=$vid OR vid=0)";
@@ -123,8 +127,9 @@ case "attr_value":
 			}
 		}
 	} else {
-		$where = "WHERE vid=$vid";
+		$where = "WHERE vid=$vid AND attrid=$attrid";
 	}
+	$where .= " ORDER BY value ASC";
 	break;
 
 }
