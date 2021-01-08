@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2019  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ case "attribute":
 		$where = "WHERE vid=$vid";
 	}
 	break;
+
 case "command":
 	$fields = "id, name";
 	if (isset($term)) {
@@ -105,8 +106,25 @@ case "admin":
         }
         break;
 
-case "value":
-	$fields = "";
+case "attr_value":
+	$fields = "value, option";
+	if (isset($term)) {
+		$where = "WHERE option RLIKE '".$term.".*'";
+		if (isset($vid)) {
+			if ($vid) {
+				$where .= " AND (vid=$vid OR vid=0)";
+			} else {
+				$where .= " AND vid=0";
+			}
+		}
+		if (isset($attrid)) {
+			if ($attrid) {
+				$where .= " AND attrid=$attrid";
+			}
+		}
+	} else {
+		$where = "WHERE vid=$vid";
+	}
 	break;
 
 }
@@ -139,6 +157,5 @@ if ($numrows > 0) {
 	}
 	echo $output;
 }
-
 CloseDatabase($dbi);
 ?>

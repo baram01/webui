@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2019 3 Youngs, Inc
+    Copyright (C) 2003-2021 3 Youngs, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,6 +68,33 @@ $( function() {
                 .append( "<div>" + item.name + "</div>" )
                 .appendTo( ul );
     };
+    $( '#value' ).autocomplete({
+      source: function( request, response ) {
+        $.ajax( {
+          url: "queryjson.php?table=attr_value",
+          dataType: "jsonp",
+          data: {
+            term: request.term,
+	    vid: $( "#vid" ).val(),
+	    attrid: $( "#attrid" ).val()
+          },
+          success: function( data ) {
+            response( data );
+          }
+        } );
+      },
+      minLength: 2,
+      select: function( event, ui ) {
+        $( "#value" ).val( ui.item.value );
+        return false;
+      }
+    })
+    .autocomplete( "instance" )._renderItem = function (ul, item ) {
+        return $( "<li>")
+                .append( "<div>" + item.value +" "+ item.option + "</div>" )
+                .appendTo( ul );
+    };
+
 } );
 
 -->
