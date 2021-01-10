@@ -68,10 +68,10 @@ if (!isset($_SERVER['HTTPS'])) {
 <meta name="viewport" contact="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/style-addition.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.theme.css">
-<!-- <link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.datetimepicker.css"> -->
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui-timepicker-addon.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.theme.css">
+<!-- <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.datetimepicker.css"> -->
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui-timepicker-addon.css">
 <?php
 if ($BROWSER_AGENT=='IE') {
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style_ie.css\" />\n";
@@ -88,11 +88,11 @@ label {
 <?php //- <body bgcolor="#F0F0F0" text="#000000" link="0000FF"> ?>
 <script language="JavaScript" src="js/ajax.js"></script>
 <script language="JavaScript" src="js/tacacs.js"></script>
-<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-2.2.4.js"></script>
 <!-- <script type="text/javascript" src="js/jquery.validate.min.js"></script> -->
-<script type="text/javascript" src="js/jquery-ui/jquery-ui.js"></script>
-<!-- <script type="text/javascript" src="js/jquery-ui/jquery-ui.datetimepicker.js"></script> -->
-<script type="text/javascript" src="js/jquery-ui/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.datetimepicker.js"></script> -->
+<script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javaScript" src="js/webtool.js"></script>
 <script language="JavaScript"> var process_prov = <?php echo $prov_config->{'process_prov'}; ?>; </script>
 <?php

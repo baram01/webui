@@ -291,6 +291,8 @@ function _open_contact(uid, obj) {
 		document.getElementById("titleName").innerHTML = "Contact Information";
 		showMe();
 		document.getElementById("_nodeframe").src = "contact.php?_ret=5&id="+this.id+"&uid="+uid.value+"&update=1";
+	} else {
+		document.getElementById("uid").focus();
 	}
 }
 

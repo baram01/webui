@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2020  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,12 +56,12 @@ if (SQLNumRows($result) > 0) {
 <head>
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <link rel="stylesheet" type="text/css" href="css/style-addition.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.theme.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.theme.css">
 </head>
 <body>
 <script language="JavaScript" src="js/tacacs.js"></script>
-<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-2.2.4.js"></script>
 <script language="Javascript">
 <!--
 function _require() {
