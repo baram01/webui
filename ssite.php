@@ -115,13 +115,13 @@ function _checkSiteReq() {
 <?php
 	if ($site_config->{'init'}) {
 		echo "
-	<tr><td colspan=\"5\">Initial configuration - please enter License key if receive one, WebUI FQDN, Company Name, Company Logo and Message</td></tr>
+	<tr><td colspan=\"5\"><font color=\"red\">Initial Configuration</font> - please enter License key if receive one, WebUI FQDN if different, Company Name, Company Logo if have one and Legal message</td></tr>
 	<tr><td colspan=\"5\">&nbsp;</td></tr>
 	<tr><td>License Key:</td><td colspan=\"3\"><input name=\"license\" type=\"text\" size=\"80\" value=\"".$site_config->{'license'}."\"></td>
 	    <td></td>
 	    <td><input name=\"site_init\" value=\"0\" type=\"hidden\"></td></tr>
-
-";
+		";
+		$site_config->{'webui'}="https://".$_SERVER['HTTP_HOST'];
 	}
 ?>
 	<tr><td>WebUI FQDN:</td><td><input id="webui" name="webui" type="text" size="30" value="<?php echo $site_config->{'webui'}; ?>" title="Put FQDN here"></td>

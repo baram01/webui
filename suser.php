@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -180,36 +180,49 @@ function _delete(uid) {
         <div id="_userAdd" style="display:none">
         <fieldset class="_collapsible">
 	<table class="_table">
-	<tr><td>Disable:</td><td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
-	    <td>Expire</td><td><input name="expire" id="expire" type="text"></td></tr>
-	<tr><td>User ID:</td><td><input id="uid" name="uid" type="text" size="25"></td>
-	    <td></td><td></td></tr>
-	<tr><td>Comment:</td><td colspan="2"><input id="comment" name="comment" type="text" size="50"></td>
-	    <td></td><td></td></tr>
-	<tr><td>Password:</td><td><input name="password" type="password" size="25"></td>
-	    <td>Re-Password:</td><td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
-	<tr><td>Privelege:</td><td><select name="priv_lvl">
-					<option value="1">1 - Report Only</option>
-					<option value="5">5 - View</option>
-					<option value="10">10 - Update</option>
-					<option value="15">15 - Super User</option>
-				   </select>
-			  </td>
-	    <td></td><td></td></tr>
-	<tr><td>Linked:</td><td><input name="admlink" type="checkbox"></td>
-	    <td><input type="hidden" name="link"></td><td></td></tr>
-	<tr><td>Rows to view:</td><td><select name="a_vrows">
+	<tr><td>Disable:</td>
+	    <td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
+	    <td>Expire:</td>
+	    <td><input name="expire" id="expire" type="text"> <font size=-2>eg. 2021-01-09 00:00:00</font></td></tr>
+	<tr><td>User ID:</td>
+	    <td><input id="uid" name="uid" type="text" size="25"></td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td>Comment:</td>
+	    <td colspan="3"><input id="comment" name="comment" type="text" size="50"></td> </tr>
+	<tr><td>Password:</td>
+	    <td><input name="password" type="password" size="25"></td>
+	    <td>Re-Password:</td>
+	    <td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
+	<tr><td>Privelege:</td>
+	    <td><select name="priv_lvl">
+		<option value="1">1 - Report Only</option>
+		<option value="5">5 - View</option>
+		<option value="10">10 - Update</option>
+		<option value="15">15 - Super User</option>
+		</select> </td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td>Linked:</td>
+	    <td><input name="admlink" type="checkbox"></td>
+	    <td><input type="hidden" name="link"></td>
+	    <td></td></tr>
+	<tr><td>Rows to view:</td>
+	    <td><select name="a_vrows">
 <?php foreach($_vrows as $_item) {
 	if (!$_item) {
-echo "					<option value=\"$_item\">all</option>";
+echo "			<option value=\"$_item\">all</option>";
 	} else {
-echo "					<option value=\"$_item\">$_item</option>";
+echo "			<option value=\"$_item\">$_item</option>";
 	}
       } ?>
-				  </select></td>
-	    <td></td><td></td></tr>
-	<tr><td><input name="option" value="1" type="hidden"></td><td><input type="submit" name="_submit" value="Add" onClick="return _checkRequired();"></td>
-	    <td></td><td></td></tr>
+		</select></td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td><input name="option" value="1" type="hidden"></td>
+	    <td><input type="submit" name="_submit" value="Add" onClick="return _checkRequired();"></td>
+	    <td></td>
+	    <td></td></tr>
 	</table>
 	</fieldset>
 	</div>

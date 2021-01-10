@@ -27,7 +27,7 @@ if ($_ret < 5) {
 	echo "<script language=\"JavaScript\"> top.location.href=\"?module=main\"; </script>";
 }
 ?>
-<script language="JavaScript" src="js/calendar3.js"></script>
+<!-- <script language="JavaScript" src="js/calendar3.js"></script> -->
 <script language="Javascript" src="js/result.js"></script>
 <script language="JavaScript">
 <!--
@@ -234,8 +234,8 @@ if ($sqlcmd != "") {
 	<tr><td>Tech Support Phone:</td><td><input type="text" name="tsphone"></td></tr>
 	<tr><td>Tech Support Email:</td><td><input type="text" name="tsemail" size=70 onChange="return _verify(this,'email');"></td></tr>
 	<tr><td>Contract Number:</td><td><input type="text" name="contract"></td></tr>
-	<tr><td>Contract Start Date:</td><td><input type="text" name="start"> <a href="Javascript:open_calendar(document.forms['vendorform'].elements['start']);"><img src="images/cal.gif" border=0></img></a> <font size=-2>eg. 2003-04-01 (Year-Month-Day)</font></td></tr>
-	<tr><td>Contract End Date:</td><td><input type="text" name="end"> <a href="Javascript:open_calendar(document.forms['vendorform'].elements['end']);"><img src="images/cal.gif" border=0></img></a> <font size=-2>eg. 2003-04-01 (Year-Month-Day)</font></td></tr>
+	<tr><td>Contract Start Date:</td><td><input type="text" id="start" name="start"> <!-- <a href="Javascript:open_calendar(document.forms['vendorform'].elements['start']);"><img src="images/cal.gif" border=0></img></a> --> <font size=-2>eg. 2003-04-01 (Year-Month-Day)</font></td></tr>
+	<tr><td>Contract End Date:</td><td><input type="text" id="end" name="end"> <!-- <a href="Javascript:open_calendar(document.forms['vendorform'].elements['end']);"><img src="images/cal.gif" border=0></img></a> --> <font size=-2>eg. 2003-04-01 (Year-Month-Day)</font></td></tr>
 	<tr><td><input name="option" value="1" type="hidden"></td><td><input type="submit" name="_submit" value="Add" onclick="return _required();"> <input type="reset" onClick="return confirm('Are you sure you want to reset the data?')"></td></tr>
 	</table>
 	</fieldset>
@@ -304,6 +304,10 @@ $(document).ready(function() {
                         $(this).focus();
                 }
         });
+
+	$('#start').datetimepicker({dateFormat: 'yy-mm-dd', timeInput: true, showHour: false, showMinute: false, showSecond: false, timeFormat: 'HH:mm:ss'});
+
+	$('#end').datetimepicker({dateFormat: 'yy-mm-dd', timeInput: true, showHour: false, showMinute: false, showSecond: false, timeFormat: 'HH:mm:ss'});
 
         var src = "result.php?_ret="+admin_priv_lvl+"&_table=vendor";
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";

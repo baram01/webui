@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -195,11 +195,13 @@ if ($_ret) {
 	</ul></fieldset></div> */ ?>
      <td width="70%" valign="top">
 	<?php
-	if ($_ret&&$module) {
-		if ($site_config->{'init'} && $module != "ssite") {
+//	if ($_ret&&$module) {
+	if ($_ret) {
+		$nmodule=$module?$module:"main";
+		if ($site_config->{'init'} && $nmodule != "ssite") {
 			echo "<script> window.location.href = \"index.php?menu=system&module=ssite\"; </script>";
 		}
-		include ($module.".php");
+		include ($nmodule.".php");
 	} else {
 		$nmodule=$module?$module:"main";
 		include ($nmodule.".php");
