@@ -93,11 +93,10 @@ if (isset($update)) {
 	    <td colspan="2"><input name="address3" id="address3" type="text" size="66" value="<?php if (isset($row["address3"])) echo $row["address3"]; ?>"></td>
 	</tr>
 	<tr><td>Phone:</td>
-	    <td><input name="phone" id="phone" type="text" size="20" value="<?php if (isset($row["phone"])) echo $row["phone"]; ?>"></td>
-	    <td></td>
+	    <td colspan="2"><input name="phone" id="phone" type="text" size="20" value="<?php if (isset($row["phone"])) echo $row["phone"]; ?>"> <font size=-1>eg. +1 222-333-4444</font></td>
 	</tr>
 	<tr><td>Email:</td>
-	    <td colspan="2"><input name="email" id="email" type="text" size="66" value="<?php if (isset($row["email"])) echo $row["email"]; ?>" onchange="_verify(this,'email')"></td>
+	    <td colspan="2"><input name="email" id="email" type="text" size="66" value="<?php if (isset($row["email"])) echo $row["email"]; ?>"></td>
 	</tr>
 	<tr><td><input name="option" type="hidden" value="<?php echo $option; ?>"></td>
 	    <td><input name="_submit" type="submit" value="<?php if ($option==1) echo "Add"; else echo "Modify"; ?>" onClick="return _require();">&nbsp;<input type="reset" onClick="return confirm('Are you sure that you want to reset?');"></td>
@@ -142,7 +141,6 @@ $(document).ready(function() {
                 var re = /^[a-zA-Z0-9.!#$%&'*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
                 if (!re.test($(this).val())) {
                         alert("Not a valid email");
-                        $(this).val("");
                         $(this).focus();
                 }
         });

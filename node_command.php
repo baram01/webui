@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2019 3 Youngs, Inc
+    Copyright (C) 2003-2021 3 Youngs, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -115,6 +115,15 @@ $( function() {
 
 <script>
 $(document).ready(function() {
+	$('#command').change(function() {
+                var re = /^[a-zA-Z0-9_-]+$/;
+                if (!re.test($(this).val())) {
+                        alert("Not a valid command");
+                        $(this).val("");
+                        $(this).focus();
+                }
+        });
+
 	$('#value').change(function() {
 		if (/[<>]/.test($(this).val())) {
 			alert("Characters are not allowed <>");

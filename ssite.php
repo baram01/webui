@@ -117,7 +117,7 @@ function _checkSiteReq() {
 		echo "
 	<tr><td colspan=\"5\"><font color=\"red\">Initial Configuration</font> - please enter License key if receive one, WebUI FQDN if different, Company Name, Company Logo if have one and Legal message</td></tr>
 	<tr><td colspan=\"5\">&nbsp;</td></tr>
-	<tr><td>License Key:</td><td colspan=\"3\"><input name=\"license\" type=\"text\" size=\"80\" value=\"".$site_config->{'license'}."\"></td>
+	<tr><td>License Key:</td><td colspan=\"3\"><input name=\"license\" id=\"license\" type=\"text\" size=\"80\" value=\"".$site_config->{'license'}."\"></td>
 	    <td></td>
 	    <td><input name=\"site_init\" value=\"0\" type=\"hidden\"></td></tr>
 		";
@@ -177,5 +177,14 @@ $(document).ready(function() {
 			$(this).focus();
 		}
 	});
+	$('license').change(function() {
+		var re = /^([a-zA-Z0-9:]+)$/;
+		if (!re.test($(this).val())) {
+			alert("Only allow alphanumeric and this special charaster :");
+			// $(this).val("");
+			$(this).focus();
+		}
+	});
+		
 });
 </script>

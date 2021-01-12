@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ while ($row = @SQLFetchArray($result)) {
 	<table class="_table">
 	<tr><td>ID:</td><td><input type="text" id="id" name="id" size=6 onChange="return _verify(this,'num');"></td></tr>
 	<tr><td>Command:</td><td><input type="text" id="name" name="name" size=20></td></tr>
-	<tr><td>Description:</td><td><input type="text" name="descr" size=20></td></tr>
+	<tr><td>Description:</td><td><input type="text" id="descr" name="descr" size=20></td></tr>
 	<tr><td>Authen:</td><td><select name="auth"><?php
 		foreach ($attr_auth as $i=>$j) {
 			echo "<option value=\"$i\">$j</option>";
@@ -222,6 +222,14 @@ $(document).ready(function() {
                         $(this).focus();
                 }
         });
+
+	$('#descr').change(function() {
+		var re = /^[a-zA-Z0-9\._\-]+$/;
+		if (!re.test($(this).val())) {
+			alert("Not allowed characters are inputted");
+			$(this).focus();
+		}
+	});
 
         var src = "result.php?_ret="+admin_priv_lvl+"&_table=command";
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";
