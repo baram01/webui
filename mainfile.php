@@ -1,7 +1,7 @@
 <?php
 $banner = "Web UI";
 $version = "5.0";
-$release = "b2.5g";
+$release = "b2.5h";
 $copyrights_dates = "2002-2021";
 $pagetitle = "WebUI $version$release";
 

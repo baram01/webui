@@ -4,8 +4,7 @@
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
                                                                                 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,13 +55,13 @@ switch ($option) {
 	    $sqlcmd .= ")";
 	    $result = @SQLQuery("$sqlcmd", $dbi);
 	    if (!@SQLError($dbi)) {
-		echo "<P><font color=\"green\">User($uid) added.</font></P>";
+		echo "<P><font color=\"green\">User(".substr($uid,0,20).") added.</font></P>";
 		Audit("user","add","UID=".$uid,$dbi);
 		if ($prov_config->{'process_prov'}) {
 			Prov_email($uid, $dbi);
 		}
 	    } else {
-		echo "<P><font color=\"red\">User($uid) add failed.</font></P>";
+		echo "<P><font color=\"red\">User(".substr($uid,0,20).") add failed.</font></P>";
 	    }
 	} else {
 		echo "<P><font color=\"red\">Blank User ID cannot be added.</font></P>";
@@ -258,15 +257,21 @@ $(document).ready(function() {
 		if (!re.test($(this).val())) {
 			alert("There characters being inputted that are not allowed");
 			$(this).val("");
-			$(this).val();
+			$(this).focus();
 		}
 	});
 
 	$('#password').change(function() {
-		if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+		if ($(this).val() == $('#uid').val()) {
+			alert("You cannot have password and username be the same");
+			$(this).val("");
+			$(this).focus();
+		} else {
+		   if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
 			alert("Minimum password length is "+<?php echo $pass_complex->{'pass_size'}; ?>);
 			$(this).val("");
 			$(this).focus();
+		    }
 		}
 	});
 

@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2019  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
 
 
 
@@ -33,7 +33,7 @@ if ($_ret < 15) {
 }
 ?>
 
-<fieldset class=" collapsible"><legend>Load Vendor File</legend>
+<fieldset class=" collapsible"><legend>Load Vendor Dictionary File</legend>
 <table border="0">
 <tr> <td>
 	<form id="load_rad" method="post" action="?menu=system&module=sload" enctype="multipart/form-data">

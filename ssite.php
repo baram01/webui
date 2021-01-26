@@ -25,6 +25,7 @@ if ($option == 2) {
 		$site_config->{'license'} = "0";
 	}
 	$site_config->{'webui'} = $webui;
+	$site_config->{'uuid'} = $uuid;
 	$site_config->{'company_name'} = $company_name;
 	$site_config->{'message'} = $message;
 	if (isset($_FILES["logo_file"]["name"])) {
@@ -114,14 +115,24 @@ function _checkSiteReq() {
 -->
 <?php
 	if ($site_config->{'init'}) {
+		$_uuid=shell_exec('/usr/bin/uuid');
 		echo "
 	<tr><td colspan=\"5\"><font color=\"red\">Initial Configuration</font> - please enter License key if receive one, WebUI FQDN if different, Company Name, Company Logo if have one and Legal message</td></tr>
 	<tr><td colspan=\"5\">&nbsp;</td></tr>
+	<tr><td>UUID:</td><td colspan=\"3\"><input name=\"uuid\" id=\"uuid\" type=\"text\" size=\"40\" value=\"".$_uuid."\" readonly></td>
+	    <td></td>
+	    <td></td></tr>
 	<tr><td>License Key:</td><td colspan=\"3\"><input name=\"license\" id=\"license\" type=\"text\" size=\"80\" value=\"".$site_config->{'license'}."\"></td>
 	    <td></td>
 	    <td><input name=\"site_init\" value=\"0\" type=\"hidden\"></td></tr>
 		";
 		$site_config->{'webui'}="https://".$_SERVER['HTTP_HOST'];
+	} else {
+		echo "
+	<tr><td>UUID:</td><td colspan=\"3\"><input name=\"uuid\" id=\"uuid\" type=\"text\" size=\"40\" value=\"".$site_config->{'uuid'}."\" readonly></td>
+	    <td></td>
+	    <td></td></tr>
+		";
 	}
 ?>
 	<tr><td>WebUI FQDN:</td><td><input id="webui" name="webui" type="text" size="30" value="<?php echo $site_config->{'webui'}; ?>" title="Put FQDN here"></td>

@@ -206,7 +206,7 @@ if (@SQLNumRows($result) > 0) {
         	}
         	echo "<td width=90 $style>";
         	if ($icon[0]) echo "<image src=\"images/".$icon[0]."\" style=\"width:15px;height:15px;\" title=\"".$icon[1]."\"></image> ";
-        	echo $row["uid"]."</td>"
+        	echo substr($row["uid"],0,20)."</td>"
         	    ."<td width=90 $style>".$row["gid"]."</td>"
         	    ."<td width=190 $style>".$row["comment"]."</td>"
         	    ."<td $style>".$row["expires"]."</td>"
@@ -255,7 +255,7 @@ if (@SQLNumRows($result) > 0) {
            } else {
                 echo "<tr><td $style>".$row["id"]."</td>";
            }
-           echo "<td width=90 $style>".$row["uid"]."</td>"
+           echo "<td width=90 $style>".substr($row["uid"],0,20)."</td>"
             ."<td width=190 $style>".$row["comment"]."</td>"
             ."<td $style>".$row["expires"]."</td>"
             ."<td $style>".$acl."</td>";
@@ -590,8 +590,9 @@ if (@SQLNumRows($result) > 0) {
                 $_style="";
                 $_img="";
                 echo "<tr>";
-                if ($row["disable"]) $_style=" style=\"border:ridge 2px red;\"";
-                else {
+                if ($row["disable"]) {
+			$_style=" style=\"border:ridge 2px red;\"";
+                } else {
                   if (strcmp($row["expire"],"0000-00-00 00:00:00")) {
                         $_now = strtotime("now");
                         $_expires = strtotime($row["expire"]);
@@ -606,7 +607,7 @@ if (@SQLNumRows($result) > 0) {
                 }
                 if (!$demo) {
                         $_linked = $row[3]?"Yes":"No";
-                        echo "<td $_style><a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".$row[0]."</a>$_img</td>";
+                        echo "<td $_style>$_img <a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".substr($row[0],0,20)."</a></td>";
                         echo "<td $_style>".$row[1]."</td>";
                         echo "<td $_style>".$row[2]."</td>";
                         echo "<td $_style>".$_linked."</td>";
@@ -617,7 +618,7 @@ if (@SQLNumRows($result) > 0) {
                         if ($row[0] == "admin") {
                                 echo "<td $_style>".$row[0]."</td>";
                         } else {
-                        	echo "<td $_style><a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".$row[0]."</a>$_img</td>";
+                        	echo "<td $_style>$_img<a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".$row[0]."</a></td>";
                         }
                         echo "<td $_style>".$row[1]."</td>"
                             ."<td $_style>";
