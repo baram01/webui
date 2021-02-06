@@ -65,7 +65,7 @@ case "host":
 	$select = "ip, name, hostgroup, vendor, prompt, loginacl, enableacl";
 	$where = "WHERE host = 1";
 	$where2 = "ORDER BY ip ASC";
-	if (isset($hostgroup) && $hostgroup) $where .= " AND hostgroup='$hostgroup'";
+	if (isset($group) && $group) $where .= " AND hostgroup='$group'";
 	break;
 
 case "hostgroup":
@@ -200,7 +200,7 @@ if (@SQLNumRows($result) > 0) {
                 	}
         	}
         	if ($_ret > 9) {
-                	echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','1')\" title=\"Modify User\">".$row["id"]."</a></td>";
+                	echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','1')\" title=\"Modify User\" $style>".$row["id"]."</a></td>";
         	} else {
                 	echo "<tr><td $style>".$row["id"]."</td>";
         	}
@@ -214,7 +214,7 @@ if (@SQLNumRows($result) > 0) {
         	if ($_ret > 9) {
                     echo "<td><a href=\"javascript:_openCommand('".$row["id"]."','".$row["uid"]."','".$top."px')\" title=\"Add/Modify Commands\"><img src=\"images/command.gif\" width=25 border=0></a>"."</td>"
                         ."<td><a href=\"javascript:_openService('".$row["id"]."','".$row["uid"]."','".$top."px')\" title=\"Add/Modify Services\"><img src=\"images/service.gif\" width=25 border=0></a>"."</td>"
-                        ."<td><a href=\"Javascript:_open_contact1('".$row["uid"]."')\"><img width=25 src=\"images/identity.gif\" border=0></img></a></td>"
+                        ."<td><a href=\"Javascript:_open_contact1('".$row["uid"]."')\" title=\"Contact Info\"><img width=25 src=\"images/identity.gif\" border=0></img></a></td>"
                         ."<td><a href=\"javascript:_delete('".$row["uid"]."');\" title=\"Delete\"><img src=\"images/trash.gif\" width=25 border=0></img></a></td></tr>\n";
         	}
         //	$top+=20;
@@ -251,7 +251,7 @@ if (@SQLNumRows($result) > 0) {
                 }
            }
            if ($_ret > 9) {
-                echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','2')\" title=\"Modify user\">".$row["id"]."</a></td>";
+                echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','2')\" title=\"Modify user\" $style>".$row["id"]."</a></td>";
            } else {
                 echo "<tr><td $style>".$row["id"]."</td>";
            }
@@ -262,7 +262,7 @@ if (@SQLNumRows($result) > 0) {
            if ($_ret > 9) {
                 echo "<td><a href=\"javascript:_openCommand('".$row["id"]."','".$row["uid"]."','".$top."px')\" title=\"Add/Modify Commands\"><img src=\"images/command.gif\" width=25 border=0></a>"."</td>"
                     ."<td><a href=\"javascript:_openService('".$row["id"]."','".$row["uid"]."','".$top."px')\" title=\"Add/Modify Services\"><img src=\"images/service.gif\" width=25 border=0></a>"."</td>"
-                    ."<td><a href=\"javascript:_group('".$row["id"]."','".$row["uid"]."')\" title=\"Users in group\"><img src=\"images/users.gif\" width=30 border=0></a>"."</td>"
+                    ."<td><a href=\"javascript:_group('".$row["id"]."','".$row["uid"]."')\" title=\"Members\"><img src=\"images/users.gif\" width=30 border=0></a>"."</td>"
                     ."<td><a href=\"javascript:_delete('".$row["uid"]."');\" title=\"Delete user\"><img src=\"images/trash.gif\" width=25 border=0></img></a></td></tr>\n";
         }
         // $top+=20;
@@ -316,14 +316,13 @@ if (@SQLNumRows($result) > 0) {
 	   
 	  	while ($row=SQLFetchArray($result)) {
         	$lacl = $row["loginacl"]?$row["loginacl"]:"&nbsp;";
-        	$eacl = $row["enableacl"]?$row["enableacl"]:"&nbsp;";
-        	if ($_ret > 9) {
+        	$eacl = $row["enableacl"]?$row["enableacl"]:"&nbsp;"; if ($_ret > 9) {
        		   echo "<tr><td width=80><a href=\"javascript:_modify('".$row["ip"]."')\" title=\"Modify group\">".$row["ip"]."</a></td>"
        		     ."<td width=80>".$vnd_array[$row["vendor"]]."</td>"
        		     ."<td width=300>".$row["prompt"]."</td>"
        		     ."<td width=45><center>".$lacl."</center></td>"
        		     ."<td width=45><center>".$eacl."</center></td>"
-       		     ."<td><a href=\"javascript:_group('".$row["ip"]."')\" title=\"Nas part of group\"><img src=\"images/nasgroup.gif\" width=25 border=0></img></a></td>"
+       		     ."<td><a href=\"javascript:_group('".$row["ip"]."')\" title=\"Members\"><img src=\"images/nasgroup.gif\" width=25 border=0></img></a></td>"
        		     ."<td><a href=\"javascript:_delete('".$row["ip"]."')\" title=\"Delete group\"><img src=\"images/trash.gif\" width=25 border=0></img></a></td></tr>\n";
        		 } else {
        		   echo "<tr><td width=80>".$row["ip"]."</td>"
@@ -591,23 +590,26 @@ if (@SQLNumRows($result) > 0) {
                 $_img="";
                 echo "<tr>";
                 if ($row["disable"]) {
-			$_style=" style=\"border:ridge 2px red;\"";
+			// $_style=" style=\"border:ridge 2px red;\"";
+			$_style=" style=\"color:red;\"";
                 } else {
                   if (strcmp($row["expire"],"0000-00-00 00:00:00")) {
                         $_now = strtotime("now");
                         $_expires = strtotime($row["expire"]);
                         if ($_now > $_expires) {
-                                $_style=" style=\"border:solid 2px red;\"";
+                                //$_style=" style=\"border:solid 2px red;\"";
+                                $_style=" style=\"color:red;\"";
                                 $_img="<image src=\"images/expired_pass.png\" style=\"width:15px;height:15px;\" title=\"Expired\"></image>";
                         } else if ((($_expires - $_now) <= $pass_complex->{'changetime'}*24*60*60)) {
-                                $_style=" style=\"border:solid 2px orange;\"";
+                                //$_style=" style=\"border:solid 2px orange;\"";
+                                $_style=" style=\"color:orange;\"";
                                 $_img="<image src=\"images/expired_pass.png\" style=\"width:15px;height:15px;\" title=\"Expired\"></image>";
                         }
                   }
                 }
                 if (!$demo) {
                         $_linked = $row[3]?"Yes":"No";
-                        echo "<td $_style>$_img <a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".substr($row[0],0,20)."</a></td>";
+                        echo "<td $_style>$_img <a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\" $_style>".substr($row[0],0,20)."</a></td>";
                         echo "<td $_style>".$row[1]."</td>";
                         echo "<td $_style>".$row[2]."</td>";
                         echo "<td $_style>".$_linked."</td>";
@@ -618,7 +620,7 @@ if (@SQLNumRows($result) > 0) {
                         if ($row[0] == "admin") {
                                 echo "<td $_style>".$row[0]."</td>";
                         } else {
-                        	echo "<td $_style>$_img<a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\">".$row[0]."</a></td>";
+                        	echo "<td $_style>$_img<a href=\"javascript:_modify('".$row[0]."','".$row[1]."','".$row[2]."','".$row[3]."','".$row[4]."',".$row[5].",'".$row[6]."')\" $_style>".$row[0]."</a></td>";
                         }
                         echo "<td $_style>".$row[1]."</td>"
                             ."<td $_style>";

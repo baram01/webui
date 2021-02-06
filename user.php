@@ -150,7 +150,7 @@ if ($debug) {
 		if (isset($group) && ($row[0]==$group)) echo " selected";
 		echo ">".$row[0]."</option>";
 	} ?></select>
-    	<tr><td width="50">Comment:</td><td colspan="4"><input type="text" id="comment" name="comment" size="64">&nbsp;<a href="Javascript:_open_contact(document.userform.uid,document.forms['userform'].elements['comment'])"><img width=25 src="images/identity.gif" border=0></img></a></td>
+    	<tr><td width="50">Comment:</td><td colspan="4"><input type="text" id="comment" name="comment" size="64">&nbsp;<a href="Javascript:_open_contact(document.userform.uid,document.forms['userform'].elements['comment'])" title="Update contact info"><img width=25 src="images/identity.gif" border=0></img></a></td>
     	<tr><td width="50">Auth Meth:</td><td><select name="auth" size="1" style="width: 150px" onchange="_check_method(this)"><?php
 	foreach ($auth_method as $i=>$method) {
 		echo "<option value=\"$i\">$method";

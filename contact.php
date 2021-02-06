@@ -34,12 +34,18 @@ switch ($option) {
 	$result = @SQLQuery("INSERT INTO contact_info (uid, fname, surname, address1, address2, address3, phone, email) VALUES ('$uid', '$fname', '$surname', '$address1', '$address2', '$address3', '$phone', '$email')", $dbi);
 
 	$result = @SQLQuery("UPDATE user SET comment='$fname $surname' WHERE uid='$uid'", $dbi);
+	Audit("contact","add","UID=".$uid,$dbi);
 	break;
    case 2:
 	$result = @SQLQuery("UPDATE contact_info SET fname='$fname', surname='$surname', address1='$address1', address2='$address2', address3='$address3', phone='$phone', email='$email' WHERE uid='$uid'", $dbi);
 
 	$result = @SQLQuery("UPDATE user SET comment='$fname $surname' WHERE uid='$uid'", $dbi);
+	Audit("contact","change","UID=".$uid,$dbi);
 	break;
+   case 3:
+	Audit("contact","delete","UID=".$uid,$dbi);
+	break;
+	
 }
 
 $row = array();

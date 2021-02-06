@@ -188,7 +188,9 @@ switch ($option) {
 	break;
    case 3:
 	$result = @SQLQuery("DELETE FROM host WHERE ip='$ip'", $dbi);
-	Audit("nas","delete","IP=".$ip,$dbi);
+	if (!@SQLError($dbi)) {
+		Audit("nas","delete","IP=".$ip,$dbi);
+	}
 	break;
 
    case 4:
@@ -239,7 +241,7 @@ while ($row = @SQLFetchRow($result)) {
 		$result = @SQLQuery("SELECT ip FROM host WHERE host=2", $dbi);
 		while ($row = @SQLFetchArray($result)) {
 			echo "<option value=\"".$row[0]."\"";
-			if (isset($group) && $group) echo " selected";
+			if (isset($group) && ($row[0]==$group)) echo " selected";
 			echo ">".$row[0]."</option>";
 		}
 	    ?></select></td></tr>
@@ -333,6 +335,7 @@ $(document).ready(function() {
 
         var src = "result.php?_ret="+admin_priv_lvl+"&_table=host";
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";
+<?php if (isset($group) && $group) echo "          src += \"&group=$group\";\n"; ?>
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
         });

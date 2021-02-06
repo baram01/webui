@@ -70,7 +70,6 @@ if (!isset($_SERVER['HTTPS'])) {
 <link rel="stylesheet" type="text/css" href="css/style-addition.css">
 <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.theme.css">
-<!-- <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.datetimepicker.css"> -->
 <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui-timepicker-addon.css">
 <?php
 if ($BROWSER_AGENT=='IE') {

@@ -38,6 +38,14 @@ case 1:
 </div>
 <script>
 $(document).ready(function() {
+	$('#newpass').keyup(function() {
+		var password = $('#newpass').val();
+		if (password.length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+			$('#newpass').css("border-bottom-color", "#dc3545");
+		} else {
+			$('#newpass').css("border-bottom-color", "#28a745");
+		}
+	});
 	$('#newpass').change(function() {
 		if ($(this).val() == $('#oldpass').val()) {
 			alert("New password cannot be same as current");
