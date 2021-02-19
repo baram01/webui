@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2020  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ if (@SQLNumRows($result) > 0) {
 		if ($row["auth"] == 3) {
 			$icon = array("ldap.png", "LDAP authentication");
 		}
-        	if ($row["disable"]) $style="style=\"color:red\"";
+        	if ($row["disable"]) $style="style=\"color:red;text-decoration:line-through\"";
         	else if ($row["flags"] & 2) {
                 	$style="style=\"color:red\"";
                 	$icon = array("change_pass.png","Change Password");
@@ -204,7 +204,7 @@ if (@SQLNumRows($result) > 0) {
         	} else {
                 	echo "<tr><td $style>".$row["id"]."</td>";
         	}
-        	echo "<td width=90 $style>";
+        	echo "<td width=110 $style>";
         	if ($icon[0]) echo "<image src=\"images/".$icon[0]."\" style=\"width:15px;height:15px;\" title=\"".$icon[1]."\"></image> ";
         	echo substr($row["uid"],0,20)."</td>"
         	    ."<td width=90 $style>".$row["gid"]."</td>"
@@ -235,9 +235,10 @@ if (@SQLNumRows($result) > 0) {
 
 	   while ($row = @SQLFetchAssoc($result)) {
            $style = "";
+	   $icon = array("");
            $acl = $row["acl_id"]?$row["acl_id"]:"&nbsp;";
 
-           if ($row["disable"]) $style="style=\"color:red\"";
+           if ($row["disable"]) $style="style=\"color:red;text-decoration:line-through\"";
            else {
                 if (strcmp($row["expires"],"0000-00-00 00:00:00")) {
                         $_now = strtotime("now");
@@ -245,17 +246,20 @@ if (@SQLNumRows($result) > 0) {
 
                         if ($_now > $_expires) {
                                 $style="style=\"color:red\"";
+                               	$icon = array("expired_pass.png","Expired Password");
                         } else if ((($_expires - $_now) <= $pass_complex->{'changetime'}*24*60*60)) {
                                 $style="style=\"color:orange\"";
                         }
                 }
            }
            if ($_ret > 9) {
-                echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','2')\" title=\"Modify user\" $style>".$row["id"]."</a></td>";
+                echo "<tr><td $style><a href=\"javascript:_modify('".$row["id"]."','".$row["uid"]."','2')\" title=\"Modify Group\" $style>".$row["id"]."</a></td>";
            } else {
                 echo "<tr><td $style>".$row["id"]."</td>";
            }
-           echo "<td width=90 $style>".substr($row["uid"],0,20)."</td>"
+           echo "<td $style>";
+	   if ($icon[0]) echo "<image src=\"images/".$icon[0]."\" style=\"width:15px;height:15px;\" title=\"".$icon[1]."\"></image> ";
+	   echo substr($row["uid"],0,20)."</td>"
             ."<td width=190 $style>".$row["comment"]."</td>"
             ."<td $style>".$row["expires"]."</td>"
             ."<td $style>".$acl."</td>";
@@ -591,7 +595,7 @@ if (@SQLNumRows($result) > 0) {
                 echo "<tr>";
                 if ($row["disable"]) {
 			// $_style=" style=\"border:ridge 2px red;\"";
-			$_style=" style=\"color:red;\"";
+			$_style=" style=\"color:red;text-decoration:line-through\"";
                 } else {
                   if (strcmp($row["expire"],"0000-00-00 00:00:00")) {
                         $_now = strtotime("now");

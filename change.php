@@ -62,7 +62,7 @@ $(document).ready(function() {
 		}
 
 		if (<?php echo $pass_complex->{'complexity'}; ?>) {
-			var msg = "Password must have at least";
+			var msg = "Password must have at ";
 			var ret = 0;
 
 			var pass_upper = <?php echo $pass_complex->{'upper'}; ?>;
@@ -73,31 +73,31 @@ $(document).ready(function() {
 
 			var re = /[A-Z]/;
 			if (pass_upper && !re.test($(this).val())) {
-				msg = msg + " " + pass_upper + " uppercase";
+				msg = msg + "least " + pass_upper + " uppercase ";
 				ret = 1;
 			}
 
 			re = /[a-z]/;
 			if (pass_lower && !re.test($(this).val())) {
-				msg = msg + " " + pass_lower + " lowercase";
+				msg = msg + "least " + pass_lower + " lowercase ";
 				ret = 1;
 			}
 
 			re = /[0-9]/;
 			if (pass_number && !re.test($(this).val())) {
-				msg = msg + " " + pass_number + " number";
+				msg = msg + "least " + pass_number + " number ";
 				ret = 1;
 			}
 
 			re = /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/;
 			if (pass_special && !re.test($(this).val())) {
-				msg = msg +  " " + pass_special + " special";
+				msg = msg +  "least " + pass_special + " special ";
 				ret = 1;
 			}
 
 			re = /(.)\1{<?php echo $pass_complex->{'multi'}; ?>}/g;
 			if (pass_multi && re.test($(this).val())) {
-				msg = msg + " and allowed " + (pass_multi - 1) + " consecutive";
+				msg = msg + "most " + (pass_multi) + " consecutive characters";
 				ret = 1;
 			}
 
