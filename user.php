@@ -154,12 +154,13 @@ if ($debug) {
     	<tr><td width="50">Auth Meth:</td><td><select name="auth" size="1" style="width: 150px" onchange="_check_method(this)"><?php
 	foreach ($auth_method as $i=>$method) {
 		echo "<option value=\"$i\">$method";
-	} ?></td>
+	} ?></select></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
-	<tr class="_passwords"><td colspan="2">Change Password at next login:&nbsp;&nbsp;<input type="checkbox" name="check_flags" onclick="Javascript:_checked2(this,document.userform.flags,2)"><input type="hidden" name="flags" value="0"></td>
-	    <td>&nbsp;&nbsp;</td>
-	    <td></td><td></td>
+	<tr class="_passwords"><td colspan="4">Change Password at next login:&nbsp;&nbsp;<input type="checkbox" id="check_flags" name="check_flags" onclick="Javascript:_checked2(this,document.userform.flags,2)"><input type="hidden" name="flags" value="0"></td>
+	    <!-- <td>&nbsp;&nbsp;</td>
+	    <td></td> -->
+	    <td></td>
     	<tr class="_passwords"><td width="50">Password:</td><td><input type="password" id="password" name="password" autocomplete="new-password" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Re-Password:</td><td><input type="password" id="re_password" name="re_password" size="20"></td>
@@ -178,9 +179,9 @@ if ($debug) {
     	<tr class="_passwords"><td width="50">MSCHAP:</td><td><input type="password" id="mschap" name="mschap" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Re-MSCHAP:</td><td><input type="password" id="re_mschap" name="re_mschap" size="20"></td>
-<!--    	<tr><td width="50">Before Authorization:</td><td><input type="hidden" name="b_author" size="20"></td>
+    	<tr style="visibility:collapse"><td width="50">Before Authorization:</td><td><input type="hidden" name="b_author" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
-    	    <td width="100">After Authorization:</td><td><input type="hidden" name="a_author" size="20"></td> -->
+    	    <td width="100">After Authorization:</td><td><input type="hidden" name="a_author" size="20"></td>
     	<tr><td width="50">Service Default:</td><td><input type="checkbox" name="check_svc_dflt" onclick="Javascript:_checked(this,document.userform.svc_dflt);"><input type="hidden" name="svc_dflt" value="0"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Command Default:</td><td><input type="checkbox" name="check_cmd_dflt" onclick="Javascript:_checked(this,document.userform.cmd_dflt);"><input type="hidden" name="cmd_dflt" value="0"></td>

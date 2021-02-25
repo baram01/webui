@@ -447,6 +447,22 @@ function checkCookie($value, $value1, $id)
 	return $ret;
 }
 
+function updateOther($field, $uid, $oldpass, $newpass, $id)
+{
+	global $_ERROR;
+	$ret = 0;
+
+	$c_newpass = unixcrypt($newpass);
+	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $uid, $oldpass);
+
+	$res = SQLQuery($sqlcmd, $id); 
+	if (SQLAffectedRows($id)) {
+		$ret = 1;
+	}
+
+	return $ret;
+}
+
 function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 {
 	global $_ERROR, $pass_complex;
@@ -466,25 +482,23 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 			if ($field  === "password") {
 				$_sql_expires = ", expires=DATE_ADD(CURDATE(), INTERVAL ".$pass_complex->{'expiretime'}." DAY)";
 			}
-//			$sqlcmd = sprintf("UPDATE user set %s=ENCRYPT('%s') %s, flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $newpass, $_sql_expires, $uid, $oldpass);
 			$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $oldpass);
 			$result = SQLQuery($sqlcmd, $id); 
 			$ret = SQLAffectedRows($id);
 			if (($ret > 0) && ($field === "password")) {
 				//Insert old password into old password table
-				$result = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".unixcrypt($oldpass)."')", $id);
-		//		$result = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid',ENCRYPT('$oldpass'))", $id);
+				$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".unixcrypt($oldpass)."')", $id);
 				// Delete oldest password if greater than pass_complex_repeat
-				$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' ORDER BY ts ASC", $id);
+				$result2 = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' ORDER BY ts ASC", $id);
 				$rows = SQLAffectedRows($id);
 				if ($rows >= $pass_complex->{'repeat'}) {
-					$_row = SQLFetchArray($result);
+					$_row = SQLFetchArray($result2);
 					$_ERROR += $_row[0];
-					$result = SQLQuery("DELETE FROM oldpass WHERE ts = '$_row[0]'");
+					$result3 = SQLQuery("DELETE FROM oldpass WHERE ts = '$_row[0]'", $id);
 					if (SQLAffectedRows($id)) {
 						$_ERROR += " Deleted old password for $uid on timestamp '$_row[0]'";
 					}
-					SQLFreeResult($result);
+					SQLFreeResult($result2);
 				}
 			}
 		}

@@ -3,10 +3,13 @@ switch ($option) {
 case 1:
 	if (!isset($expiretime)) { $expiretime = "0000-00-00 00:00:00"; }
 	$ret = updatePassword($type, $uid, $oldpass, $newpass, $expiretime, $dbi);
+	if (($type=="password") && ($ret > 0)) {
+		updateOther("enable", $uid, $newpass, $_enable, $dbi);
+	}
 	echo "<script language=\"JavaScript\">";
 	if ($ret > 0) {
-		echo " alert('Changed password for $uid');";
-		Audit("chg_pass","change",$type." UID=".$uid, $dbi);
+		echo " alert('Changed $type for $uid');";
+		Audit("chg_pass","change"," UID=".$uid." ".$type, $dbi);
 	} else if ($ret < 0) {
 		echo " alert('You cannot reuse last ".$pass_complex->{'repeat'}." passwords for $uid');";
 	} else {
@@ -22,28 +25,43 @@ case 1:
        <form name="change_password" method="post" action="?module=change&option=1">
 	   <fieldset class=" collapsible"><legend>Change Password</legend>
            <table align="left" border=0>
-	      <tr><td>Username:</td><td><input type="text" name="uid"></td></tr>
+	      <tr><td>Username:</td><td><input type="text" id="uid" name="uid"></td></tr>
 	      <tr><td>Password:</td><td><input type="password" id="oldpass" name="oldpass"></td></tr>
-	      <tr><td>Change:  </td><td><select name="type">
+	      <tr><td>Change:  </td><td><select name="type" id="type">
 		  <option value="password">password
-		  <option value="enable">enable
 		  <option value="pap">pap
 		                   </select>
 	      <tr><td>New Password:</td><td><input type="password" id="newpass" name="newpass"></td></tr>
 	      <tr><td>Re-type Password:</td><td><input type="password" id="retype" name="retype"></td></tr>
-	      <tr><td></td><td><input type="submit" value="Change" onClick="return _check(this);"></td></tr>
+	      <tr class="_enpass"><td>Sync Enable:</td><td><input type="checkbox" id="sync" name="sync"></td></tr>
+	      <tr class="_enpass"><td>New Enable:</td><td><input type="password" id="_enable" name="_enable"></td></tr>
+	      <tr class="_enpass"><td>Re-type Enable:</td><td><input type="password" id="re_enable" name="re_enable"></td></tr>
+	      <tr><td></td><td><input type="submit" id="_submit" name="_submit" value="Change"></td></tr>
 	  </table>
 	  </fieldset>
        </form>
 </div>
 <script>
 $(document).ready(function() {
-	$('#newpass').keyup(function() {
-		var password = $('#newpass').val();
-		if (password.length < <?php echo $pass_complex->{'pass_size'}; ?>) {
-			$('#newpass').css("border-bottom-color", "#dc3545");
+	var _sync = 0;
+
+	$('#type').change(function(){
+		if($(this).val() == "pap") {
+			$('._enpass').hide();
+			$('#_enable').prop("disabled", true);
+			$('#re_enable').prop("disabled", true);
 		} else {
-			$('#newpass').css("border-bottom-color", "#28a745");
+			$('._enpass').show();
+			$('#_enable').prop("disabled", false);
+			$('#re_enable').prop("disabled", false);
+		}
+	});
+	$('#newpass').keyup(function() {
+		var password = $(this).val();
+		if (password.length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+			$(this).css("border-bottom-color", "#dc3545");
+		} else {
+			$(this).css("border-bottom-color", "#28a745");
 		}
 	});
 	$('#newpass').change(function() {
@@ -109,11 +127,62 @@ $(document).ready(function() {
 		}
 	});
 	$('#retype').change(function() {
-		if ($(this).val() == $('#newpass').val()) {
+		if ($(this).val() != $('#newpass').val()) {
 			alert("New password does not match");
 			$(this).val("");
 			$(this).focus();
 		}
+	});
+	$('#re_enble').change(function() {
+		if ($(this).val() != $('#_enable').val()) {
+			alert("New enable does not match");
+			$(this).val("");
+			$(this).focus();
+		}
+	});
+	$('#sync').click(function() {
+		if ($(this).prop("checked") == true) {
+			$('#_enable').val($('#newpass').val());
+			$('#re_enable').val($('#newpass').val());
+			$('#_enable').prop("disabled", true);
+			$('#re_enable').prop("disabled", true);
+			_sync = 1;
+		} else {
+			$('#_enable').prop("disabled", false);
+			$('#re_enable').prop("disabled", false);
+			_sync = 0;
+		}
+	});
+	$('#_submit').on("click", function() {
+		var msg = "";
+		if (!$('#uid').val()) {
+			msg = "Missing username\n";
+			$('#uid').css("border-bottom-color", "#dc3545");
+		} else {
+			$('#uid').css("border-bottom-color", "#28a745");
+		}
+		if (!$('#oldpass').val()) {
+			msg = msg + "Missing current password\n";
+			$('#oldpass').css("border-bottom-color", "#dc3545");
+		} else {
+			$('#oldpass').css("border-bottom-color", "#28a745");
+		}
+		if (!$('#newpass').val()) {
+			msg = msg + "Missing new password\n";
+			$('#newpass').css("border-bottom-color", "#dc3545");
+			$('#retype').css("border-bottom-color", "#dc3545");
+		}
+		if (!$('#_enable').val() && ($('#type').val() == "password")) {
+			msg = msg + "Missing new enable";
+			$('#_enable').css("border-bottom-color", "#dc3545");
+			$('#re_enable').css("border-bottom-color", "#dc3545");
+		}
+
+		if (msg) {
+			alert(msg);
+			event.preventDefault();
+		}
+		$('#_enable').prop("disabled", false);
 	});
 });
 </script>

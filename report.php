@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2020 3Youngs, Inc
+    Copyright (C) 2021 3Youngs, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -162,7 +162,7 @@ if (@SQLNumRows($result) > 0) {
 		break;
 
            case "audit":
-                echo "<tr><th>Date</th><th>User</th><th>Client IP</th><th>Service</th><th>Status</th><th>Changed</th></tr>\n";
+                echo "<tr><th>Date</th><th>User</th><th>User IP</th><th>Service</th><th>Status</th><th>Changed</th></tr>\n";
                 break;
 
 	}

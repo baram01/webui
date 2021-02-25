@@ -72,7 +72,7 @@ $( function() {
 	<div id="_node_svc_add" style="display:none">
 	<fieldset class="_collapsible">
 	<table class="_table">
-	<tr><td width="50">Sequence:</td><td><input type="text" name="seq" size="5"></td></tr>
+	<tr><td width="50">Sequence:</td><td><input type="text" id="seq" name="seq" size="5"></td></tr>
 	<tr><td width="50">Permit:</td><td><select name="type"><option value="57">permit<option value="58">deny</select></td></tr>
 	<tr><td width="50">Vendor:</td><td><select name="vid" onchange="javascript:_getCommands(this)"><?php
 		foreach ($vnd_array as $i=>$value) {
@@ -103,7 +103,7 @@ $( function() {
                 echo "<td width=25>".$vnd_array[$svc_array[$i]["vid"]]."</td>";
                 echo "<td width=150>".$svc_array[$i]["value1"]."</td>";
                 echo "<td width=200>".$svc_array[$i]["value"]."</td>";
-             /*   echo "<td width=25><a href=\"Javascript:_modify(svc_info[$i])\" title=\"Modify Command\"><img src=\"images/modify.gif\" width=25 border=0></a></td>"; */
+//                echo "<td width=25><a href=\"Javascript:_modify(svc_info[$i])\" title=\"Modify Command\"><img src=\"images/modify.gif\" width=25 border=0></a></td>";
                 echo "<td width=25><input type=\"image\" width=25 border=0 src=\"images/trash.gif\" onclick=\"return _delete(this.form,svc_info[$i]);\" title=\"Delete Command\">\n";
         }
 ?>
@@ -115,6 +115,14 @@ $( function() {
 
 <script>
 $(document).ready(function() {
+	$('#seq').change(function() {
+		var re = /^[0-9]+$/;
+		if (!re.test($(this).val())) {
+			alert("Sequence can only be numeric");
+			$(this).val("");
+			$(this).focus();
+		}
+	});
 	$('#command').change(function() {
                 var re = /^[a-zA-Z0-9_-]+$/;
                 if (!re.test($(this).val())) {
@@ -123,7 +131,6 @@ $(document).ready(function() {
                         $(this).focus();
                 }
         });
-
 	$('#value').change(function() {
 		if (/[<>]/.test($(this).val())) {
 			alert("Characters are not allowed <>");
