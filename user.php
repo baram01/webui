@@ -64,7 +64,7 @@ switch ($option) {
 		echo "<P><font color=\"red\">User(".substr($uid,0,20).") add failed.</font></P>";
 	    }
 	} else {
-		echo "<P><font color=\"red\">Blank User ID cannot be added.</font></P>";
+		echo "<P><font color=\"red\">Blank Username cannot be added.</font></P>";
 	}
 	break;
   case 2:
@@ -142,7 +142,7 @@ if ($debug) {
 	while ($row = SQLFetchRow($result)) {
 		echo "<option value=\"".$row[0]."\">".$row[0];
 	} ?></td>
-    	<tr><td width="50">User ID:</td><td><input type="text" id="uid" name="uid" size="20"></td>
+    	<tr><td width="50">Username:</td><td><input type="text" id="uid" name="uid" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Group:</td><td><select name=gid size=1 style="width: 150px"><option value=""><?php $result = @SQLQuery("SELECT uid FROM user WHERE user=2", $dbi);
 	while ($row = @SQLFetchRow($result)) {
@@ -323,7 +323,7 @@ $(document).ready(function() {
 		var msg = "";
 
 		if ($('#uid').val()=="") {
-			msg += "User ID cannot be blank";
+			msg += "Username cannot be blank";
 			$('#uid').focus();
 			p = true;
 		}

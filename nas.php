@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+03/07/2021 - Andrew Young
+	Add IPv6 support
 04/12/2019 - Andrew Young
 	Add support host name
 	Change ACL to Policy
@@ -41,6 +43,8 @@ function _add(obj) {
 
         if (resultForm.option.value == "2") {
                 resultForm.ip.disabled = false;
+                resultForm.name.value = "";
+                resultForm.enable.value = "";
                 resultForm.option.value = "1";
                 resultForm._submit.value = "Add";
                 _hover2();
@@ -163,14 +167,35 @@ $where = "";
 switch ($option) {
    case 1:
 	$network = preg_split('/\//', $ip);
-	if (count($network)==1) $maskbits = 32;
-	else $maskbits = $network[1];
+	$network6 = "";
+	$submask6 = "";
+	if (count($network)==1) {
+		$maskbits = 32;
+		$submask6 = Submask6(128);
+		if (preg_match("/:/", $network[0])) {
+			$network6 = $network[0];
+			$network[0] = "255.255.255.255";
+		} else {
+			$network6 = "::FFFF:".$network[0];
+		}
+	} else {
+		if (preg_match("/:/",$network[0])) {
+			$network6 = $network[0];
+			$network[0]="255.255.255.255";
+			$maskbits = 32;
+			$submask6 = Submask6($network[1]);
+		} else {
+			$network6 = "::FFFF:".$network[0];
+			$maskbits = $network[1];
+			$submask6 = Submask6(96+$maskbits);
+		}
+	}
 //	$crypt_enable = "";
 	// if ($enable) $crypt_enable = unixcrypt($enable);
 	if ($enable) {
-		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
+		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, network6, submask, submask6, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET6_ATON('$network6'),INET_ATON('".$netmask[$maskbits]."'),INET6_ATON('$submask6'),$loginacl,$enableacl,$vendor,1)", $dbi);
 	} else {
-		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','','$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
+		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, network6, submask, submask6, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','','$prompt1',INET_ATON('".$network[0]."'), INET6_ATON('$network6'), INET_ATON('".$netmask[$maskbits]."'), INET6_ATON('$submask6'), $loginacl,$enableacl,$vendor,1)", $dbi);
 	}
         if (!@SQLError($dbi))
 		Audit("nas","add","IP=".$ip,$dbi);
@@ -234,9 +259,6 @@ while ($row = @SQLFetchRow($result)) {
 	     ?></select></td></tr>
 	<tr><td>Name:</td><td><input type="text" id="name" name="name"></td>
 	    <td>&nbsp;&nbsp;</td>
-	    <td>&nbsp;&nbsp;</td></tr>
-	<tr><td>HKey:</td><td><input type="text" id="hkey" name="hkey"></td>
-	    <td>&nbsp;&nbsp;</td>
 	    <td>Group:</td><td><select name="hostgroup" style="width: 150px"><option value=""></option><?php
 		$result = @SQLQuery("SELECT ip FROM host WHERE host=2", $dbi);
 		while ($row = @SQLFetchArray($result)) {
@@ -245,6 +267,9 @@ while ($row = @SQLFetchRow($result)) {
 			echo ">".$row[0]."</option>";
 		}
 	    ?></select></td></tr>
+	<tr><td>HKey:</td><td><input type="text" id="hkey" name="hkey"></td>
+	    <td>&nbsp;&nbsp;</td>
+	    <td>&nbsp;&nbsp;</td></tr>
 	<tr><td>Login Policy:</td><td><select name="loginacl"><option value="0"></option><?php
 		foreach ($acls as $acl) {
 			echo "<option value=\"$acl\">$acl</option>";

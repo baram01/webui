@@ -1,7 +1,7 @@
 <?php
-$banner = "Web UI";
+$banner = "WebUI";
 $version = "5.0";
-$release = "b2.5h";
+$release = "b3";
 $copyrights_dates = "2002-2021";
 $pagetitle = "WebUI $version$release";
 
@@ -554,6 +554,37 @@ function navi_buttons($_func, $_table, $_rows, $_offset, $_vrows, $_index)
                 echo "<a href=\"javascript:$_func('$_table',".($_rows-$_vrows).",$_vrows,$_index);\" class=\"navi-item navi-round\">&#8250&#8250</a>";
                 echo "</div>\n";
         }
+}
+
+// Submask6
+function Submask6($sub_bit)
+{
+	$int_size = PHP_INT_SIZE * 8;
+	$val = -1;
+	$_submask = "";
+
+	for ($i=0; $i < (128/$int_size); $i++) {
+		$places = ($int_size<$sub_bit)?0:$int_size-$sub_bit;
+		$res = $val << $places;
+
+		if ($res) {
+			$chunk = str_split(dechex($res), 4);
+			$_submask .= implode(':', $chunk);
+		} else {
+			if ($int_size == 32) {
+				$_submask .= "0000:0000";
+			} else {
+				$_submask .= "0000:0000:0000:0000";
+			}
+		}
+
+		if ($i < (128/$int_size)-1) {
+			$_submask .= ":";
+		}
+		$sub_bit -= $int_size;
+	}
+
+	return $_submask;
 }
 
 foreach ($_POST as $key=>$val) {

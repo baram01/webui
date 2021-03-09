@@ -124,15 +124,15 @@ $(document).ready(function() {
 		}
 	});
 	$('#command').change(function() {
-                var re = /^[a-zA-Z0-9_-]+$/;
-                if (!re.test($(this).val())) {
+                var re = /[<>@#^%]/;
+                if (re.test($(this).val())) {
                         alert("Not a valid command");
                         $(this).val("");
                         $(this).focus();
                 }
         });
 	$('#value').change(function() {
-		if (/[<>]/.test($(this).val())) {
+		if (/[<>@#^%]/.test($(this).val())) {
 			alert("Characters are not allowed <>");
 			$(this).val("");
 			$(this).focus();

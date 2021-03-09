@@ -80,7 +80,7 @@ function _checkRequired() {
         var msg = "";
 
         if (!form.uid.value ) {
-                msg = msg + " Missing User ID.\n";
+                msg = msg + " Missing Username.\n";
 		form.uid.focus();
         }
 
@@ -184,7 +184,7 @@ function _delete(uid) {
 	    <td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
 	    <td>Expire:</td>
 	    <td><input name="expire" id="expire" type="text"> <font size=-2>eg. 2021-01-09 00:00:00</font></td></tr>
-	<tr><td>User ID:</td>
+	<tr><td>Username:</td>
 	    <td><input id="uid" name="uid" type="text" size="25"></td>
 	    <td></td>
 	    <td></td></tr>
