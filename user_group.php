@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -255,6 +255,21 @@ $(document).ready(function() {
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
+        });
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&group="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_results0").innerHTML = data;
+                });
         });
 });
 </script>

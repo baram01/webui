@@ -37,7 +37,7 @@ switch ($option) {
 		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid'", $dbi);
 		if (SQLNumRows($result) > 0) {
 			$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,"",$priv_lvl,1,$a_vrows,$disable,$expire);
-		} else { $_ERROR="User ($uid) not found"; }
+		} else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 		if ($expire=="") $expire="0000-00-00 00:00:00";
 		$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,unixcrypt($password),$priv_lvl,0,$a_vrows,$disable,$expire);
@@ -50,7 +50,7 @@ switch ($option) {
 		$result = @SQLQuery("SELECT uid FROM user WHERE uid='$uid'", $dbi);
 		if (@SQLNumRows($result) > 0) {
 			$sqlcmd = "UPDATE admin set comment='$comment', priv_lvl=$priv_lvl, link=1, vrows=$a_vrows, disable=$disable, expire='$expire' WHERE uid='$uid'";
-		 } else { $_ERROR="User ($uid) not found"; }
+		 } else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 //		if ($re_password) $re_password = ", password=ENCRYPT('$password')";
 		if ($re_password) $re_password = ", password='".unixcrypt($password)."'";
@@ -174,7 +174,7 @@ function _delete(uid) {
 //-->
 </script>
 <form name="userform" method="post" action="?menu=system&module=suser">
-<fieldset class="_collapsible"><legend>System Users <?php if ($_ret > 9) { echo "<a href=\"javascript:_add('_userAdd')\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?></legend>
+<fieldset class="_collapsible"><legend>System Admin Users <?php if ($_ret > 9) { echo "<a href=\"javascript:_add('_userAdd')\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?></legend>
 <table border=0 width="100%">
 <tr><td>
         <div id="_userAdd" style="display:none">
@@ -228,7 +228,7 @@ echo "			<option value=\"$_item\">$_item</option>";
 	</div>
 </td></tr>
 <tr>
-	<td><div id="_status"></div></td>
+	<td><div id="_result0"></div></td>
 </tr>
 </table>
 </fieldset>
@@ -257,7 +257,22 @@ $(document).ready(function() {
 
 	var src = "result.php?_ret="+admin_priv_lvl+"&_table=admin&vrows="+admin_vrows;
 	$.get(src, function (data, status) {
-		document.getElementById("_status").innerHTML = data;
+		document.getElementById("_result0").innerHTML = data;
 	});
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&user="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_result0").innerHTML = data;
+                });
+        });
 });
 </script>

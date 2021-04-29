@@ -1,7 +1,7 @@
 <?php
 $banner = "WebUI";
-$version = "5.0";
-$release = "b3";
+//$version = "5.0";
+//$release = "b5";
 $copyrights_dates = "2002-2021";
 $pagetitle = "WebUI $version$release";
 
@@ -539,19 +539,19 @@ function Audit($service, $status, $_what, $dbi)
 
 }
 
-function navi_buttons($_func, $_table, $_rows, $_offset, $_vrows, $_index)
+function navi_buttons($_func, $_table, $_rows, $_offset, $_vrows, $_index,$_search)
 {       
         if ($_rows>$_vrows) {
                 echo "<div class=\"navi\" id=\"navi\">";
                 if ($_offset) {
-                        echo "<a href=\"javascript:$_func('$_table',0,$_vrows,$_index);\" class=\"navi-item navi-round\">&#8249&#8249</a>";
+                        echo "<a href=\"javascript:$_func('$_table',0,$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8249&#8249</a>";
                         $ppos = ($_offset-$_vrows)<0?0:($_offset-$_vrows);
-                        echo "<a href=\"javascript:$_func('$_table',$ppos,$_vrows,$_index);\" class=\"navi-item navi-round\">&#8249</a>";
+                        echo "<a href=\"javascript:$_func('$_table',$ppos,$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8249</a>";
                 }
                 if (($_offset+$_vrows)<$_rows) {
-                        echo "<a href=\"javascript:$_func('$_table',".($_offset+$_vrows).",$_vrows,$_index);\" class=\"navi-item navi-round\">&#8250</a>";
+                        echo "<a href=\"javascript:$_func('$_table',".($_offset+$_vrows).",$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8250</a>";
                 }
-                echo "<a href=\"javascript:$_func('$_table',".($_rows-$_vrows).",$_vrows,$_index);\" class=\"navi-item navi-round\">&#8250&#8250</a>";
+                echo "<a href=\"javascript:$_func('$_table',".($_rows-$_vrows).",$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8250&#8250</a>";
                 echo "</div>\n";
         }
 }
@@ -585,6 +585,27 @@ function Submask6($sub_bit)
 	}
 
 	return $_submask;
+}
+
+function Netmask6($subnet) {
+	$mask = "";
+
+	if ($subnet) {
+		$len = PHP_INT_SIZE * 8;
+		if ($subnet > $len) $subnet = $len;
+
+		$mask = str_repeat('f', $subnet>>2);
+
+		switch ($subnet & 3) {
+			case 3: $mask .= 'e'; break;
+			case 2: $mask .= 'c'; break;
+			case 1: $mask .= '8'; break;
+		}
+		$mask = str_pad($mask, $len>>2, '0');
+		$mask = pack('H*', $mask);
+	}
+
+	return $mask;
 }
 
 foreach ($_POST as $key=>$val) {

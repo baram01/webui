@@ -1,7 +1,6 @@
 <?php
 /*
-    Copyright (C) 2021  Young Consulting, Inc
-                                                                                                                                                                 
+    Copyright (C) 2021  Young Consulting, Inc 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -39,6 +38,7 @@ $_lastID = 0;
 $select = "";
 $where = "";
 $where2 = "";
+$_search = "''";
 $table = $_table;
 
 switch ($_table) {
@@ -46,8 +46,9 @@ case "user":
 	$_lastID = $start_uid;
 	$select = "disable, id, uid, gid, comment, expires, acl_id, flags, auth";
 	$where = "WHERE user = 1";
-	if (isset($_uid) && $_uid) {
-		$where .= " AND uid = ".$_uid;
+	if (isset($user) && $user) {
+		$where .= " AND uid LIKE '".$user."%'";
+		$_search = "'user=$user'";
 	}
 	$where2 = "ORDER BY id";
 	if (isset($group) && $group) $where .= " AND gid='$group'";
@@ -58,20 +59,40 @@ case "usergroup":
 	$select = "disable, id, uid, comment, expires, acl_id";
 	$table = "user";
 	$where = "WHERE user = 2";
+	if (isset($group) && $group) {
+		$where .= " AND uid LIKE '".$group."%'";
+		$_search = "'group=$group'";
+	}
 	$where2 = "ORDER BY id";
 	break;
 
 case "host":
 	$select = "ip, name, hostgroup, vendor, prompt, loginacl, enableacl";
 	$where = "WHERE host = 1";
+	if (isset($ip) && $ip) {
+		$where .= " AND (ip LIKE '".$ip."%' OR name LIKE '".$ip."%')";
+		$_search = "'ip=$ip'";
+	}
+	if (isset($group) && $group) {
+		$where .= " AND hostgroup='$group'";
+	}
+	if (isset($_vendor) && $_vendor) {
+		$select = "ip, $table.name, hostgroup, vendor, prompt, loginacl, enableacl";
+		$where .= " AND $table.vendor = vendor.id AND vendor.name LIKE '".$_vendor."%'";
+		$table .= ",vendor";
+		$_search = "'vendor=$vendor'";
+	}
 	$where2 = "ORDER BY ip ASC";
-	if (isset($group) && $group) $where .= " AND hostgroup='$group'";
 	break;
 
 case "hostgroup":
 	$select = "ip, vendor, prompt, loginacl, enableacl";
 	$table = "host";
 	$where = "WHERE host = 2";
+        if (isset($group) && $group) {
+                $where .= " AND ip LIKE '".$group."%'";
+		$_search = "'group=$group'";
+        }
 	break;
 
 case "profile":
@@ -79,6 +100,10 @@ case "profile":
 	$select ="id, uid";
 //	$table = "user";
 //	$where = "WHERE user = 3";
+        if (isset($profile) && $profile) {
+                $where = "WHERE uid LIKE '".$profile."%'";
+		$_search = "'profile=$profile'";
+        }
 	$where2 = "ORDER BY id";
 	break;
 
@@ -98,16 +123,28 @@ case "user_acl":
 
 case "attribute":
 	$select ="id, name, descr, type, auth, vid, has_value";
+	if (isset($attribute) && $attribute) {
+		$where = "WHERE name LIKE '".$attribute."%'";
+		$_search = "'attribute=$attribute'";
+	}
 	$where2 = "ORDER BY vid";
 	break;
 
 case "command":
 	$select ="id, name, descr, auth, vid";
+	if (isset($command) && $command) {
+		$where = "WHERE name LIKE '".$command."%'";
+		$_search = "'command=$command'";
+	}
 	$where2 = "ORDER BY id";
 	break;
 
 case "vendor":
 	$select = "id, name, contract, tsphone";
+	if (isset($vendor) && $vendor) {
+		$where = "WHERE name LIKE '".$vendor."%'";
+		$_search = "'vendor=$vendor'";
+	}
 	$where2 = "ORDER BY id";
 	break;
 
@@ -119,14 +156,17 @@ case "attr_value":
 
 case "config":
 	$select = "*";
-	$where = "";
-	$where2 = "";
+	// $where = "";
+	// $where2 = "";
 	break;
 
 case "admin":
 	$select = "uid, comment, priv_lvl, link, vrows, disable, expire";
-	$where = "";
-	$where2 = "";
+	// $where = "";
+	if (isset($user) && $user) {
+		$where = "WHERE uid LIKE '".$user."%'";
+	}
+	// $where2 = "";
 	break;
 }
 
@@ -154,7 +194,7 @@ if (@SQLNumRows($result) > 0) {
 	else { echo @SQLNumRows($result); }
 	echo " shown.\n";
 
-	navi_buttons("_Result",$_table,$_r[0],$offset,$vrows,$_index);
+	navi_buttons("_Result",$_table,$_r[0],$offset,$vrows,$_index,$_search);
 	SQLFreeResult($result2);
 
 //	echo "<table border=1 cellspacing=1 cellpadding=2 class=\"_table2\">\n";
@@ -369,6 +409,7 @@ if (@SQLNumRows($result) > 0) {
 
 	   case "nas_acl":
 		$curid = 0;
+		$_acl_name = "";
 		$perm_type = array(57=>"permit", "deny");
 		$profile = array(0=>'&nbsp;');
 
@@ -378,24 +419,33 @@ if (@SQLNumRows($result) > 0) {
 		}
 		@SQLFreeResult($result3);
 
-		echo "<tr><th>ID</th><th>Sequence</th><th>Permission</th><th>User/Group</th><th>Profile</th></tr>\n";
+		echo "<tr><th>ID/Name</th><th>Sequence</th><th>Permission</th><th>User/Group</th><th>Profile</th></tr>\n";
 
 		while ($row = @SQLFetchArray($result)) {
 		   if ($row["id"]) {
 			if ($row["id"] != $curid) {
+				$_acl_name = "";
+
 				$result4 = @SQLQuery("SELECT id FROM acl WHERE type=2 AND id=".$row["id"], $dbi);
 				$_num = @SQLNumRows($result4);
 				@SQLFreeResult($result4);
 
+				$result4 = @SQLQuery("SELECT name FROM acl_name WHERE id=".$row["id"], $dbi);
+				if (@SQLNumRows($result4)) {
+					$row4 = @SQLFetchArray($result4);
+					$_acl_name = $row4[0];
+				}
+				@SQLFreeResult($result4);
+
 				echo "<tr><td rowspan='$_num'>".$row["id"];
-				if ($_ret > 9) echo "<a href=\"javascript:_add_acl('_acladd',".$row["id"].")\"><img src=\"images\plus-new.gif\" border=\"0\" /></a>";
-				echo "</td>";
+				if ($_ret > 9) echo " <a href=\"javascript:_add_acl('_acladd',".$row["id"].",'$_acl_name')\"><img src=\"images\plus-new.gif\" border=\"0\" /></a>";
+				echo "<br>$_acl_name</td>";
 				$curid = $row["id"];
 			} else {
 				echo "<tr>";
 			}
 			if ($_ret > 9) {
-				echo "<td><a href=\"javascript:_modify('".$row["id"]."','".$row["seq"]."')\" title=\"Modify ACL and sequence\">".$row["seq"]."</a></td>"
+				echo "<td><a href=\"javascript:_modify('".$row["id"]."','$_acl_name','".$row["seq"]."')\" title=\"Modify ACL and sequence\">".$row["seq"]."</a></td>"
 	                           ."<td>".$perm_type[$row["permission"]]."</td>"
 	                           ."<td>".$row["value"]."</td>"
 	                           ."<td>".$profile[$row["value1"]]."</td>"
@@ -588,11 +638,10 @@ if (@SQLNumRows($result) > 0) {
 
 	   case "admin":
 		echo "<tr><th>User</th><th>Comment</th><th>Privilege</th><th>Linked</th><th>View</th><th>Expire</th></tr>\n";
-		$result = SQLQuery("SELECT uid,comment,priv_lvl,link,vrows,disable,expire FROM admin", $dbi);
-	   while ($row=SQLFetchArray($result)) {
-                $_style="";
-                $_img="";
-                echo "<tr>";
+	   	while ($row=SQLFetchArray($result)) {
+			$_style="";
+			$_img="";
+			echo "<tr>";
                 if ($row["disable"]) {
 			// $_style=" style=\"border:ridge 2px red;\"";
 			$_style=" style=\"color:red;text-decoration:line-through\"";

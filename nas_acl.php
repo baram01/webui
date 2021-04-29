@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,34 +29,44 @@ if ($_ret < 5) {
 ?>
 <script language="JavaScript">
 <!--
+document.getElementById("_search").style="visibility:hidden";
+
 function _add(obj) {
         resultForm = document.aclform;
 
         if (resultForm.option.value == "2") {
                 resultForm.id.disabled = false;
                 resultForm.id.value = "";
-                resultForm.name.disabled = false;
+                // resultForm.name.disabled = false;
+                // resultForm.name.value = "";
                 resultForm.option.value = "1";
                 resultForm._submit.value = "Add";
                 _hover2();
         } else {
+                resultForm.id.disabled = false;
                 resultForm.id.value = "";
+                // resultForm.name.disabled = false;
+                // resultForm.name.value = "";
                 addMe(obj);
         }
 }
 
-function _add_acl(obj, value) {
+function _add_acl(obj, _id, _name) {
         resultForm = document.aclform;
 
         if (resultForm.option.value == "2") {
                 resultForm.id.disabled = false;
-                resultForm.id.value = value;
-                resultForm.name.disabled = false;
+                resultForm.id.value = _id;
+                // resultForm.name.disabled = false;
+                // resultForm.name.value = _name;
                 resultForm.option.value = "1";
                 resultForm._submit.value = "Add";
                 _hover2();
         } else {
-                resultForm.id.value = value;
+                resultForm.id.disabled = true;
+                resultForm.id.value = _id;
+                // resultForm.name.disabled = true;
+                // resultForm.name.value = _name;
                 addMe(obj);
         }
 }
@@ -69,7 +79,8 @@ function _delete(id, seq)
 		document.aclform.id.value = id;
 		document.aclform.seq.value = seq;
 		document.aclform.option.value = "3";
-		document.aclform.submit(); }
+		document.aclform.submit();
+	}
 }
 
 function _hover(acl)
@@ -110,11 +121,13 @@ function getVendorResults()
 	}
 }
 
-function _modify(id,seq)
+function _modify(id,name,seq)
 {
 	resultForm = document.aclform;
 	getQueryXML(getVendorResults,"acl","type=2&id="+id+"&seq="+seq);
 	resultForm.id.disabled = true;
+	// resultForm.name.disabled = true;
+	// resultForm.name.value = name;
 	resultForm.option.value = "2";
 	resultForm._submit.value = "Modify";
 	document.getElementById("_acladd").style.display = "";
@@ -209,14 +222,21 @@ function modifyTableRowspan(column) {
 <?php
 switch ($option) {
    case 1:
+	// $result1 = @SQLQuery("INSERT INTO acl_name (id, name, type) VALUES ($id, '$name', 2)", $dbi);
 	$result = @SQLQuery("INSERT INTO acl (id, seq, permission, value, value1, type) VALUES ($id, $seq, $permission, '$ugvalue', $value1, 2)", $dbi);
-	if (!@SQLError($dbi))
+	if (!@SQLError($dbi)) {
 		Audit("nas_acl", "add", "ACL=".$id." SEQ=".$seq, $dbi);
+	} else {
+		echo "<font color='red'>Entry already in ACL</font>";
+	}
 	break;
    case 2:
 	$result = @SQLQuery("UPDATE acl SET seq=$seq, permission=$permission, value='$ugvalue', value1=$value1 WHERE id=$id AND seq=$oldseq AND type=2", $dbi);
-	if (!@SQLError($dbi))
+	if (!@SQLError($dbi)) {
 		Audit("nas_acl", "change", "ACL=".$id." SEQ=".$seq, $dbi);
+	} else {
+		echo "<font color='red'>Cannot be modified</font>";
+	}
 	break;
    case 3:
 	$result = @SQLQuery("SELECT ip FROM host WHERE loginacl=$id or enableacl=$id", $dbi);
@@ -227,6 +247,7 @@ switch ($option) {
 	} else {
 		if ($numnas<1) {
 			$result = @SQLQuery("DELETE FROM acl WHERE id=$id AND seq=$seq AND type=2", $dbi);
+			// $result = @SQLQuery("DELETE FROM acl_name WHERE id=$id", $dbi);
 			Audit("nas_acl", "delete", "ACL=".$id." SEQ=".$seq, $dbi);
 		} else
 			echo "<P><font color=\"red\">Cannot delete ACL($id). There are too many dependancies.</font></P>";
@@ -254,7 +275,7 @@ while ($row = @SQLFetchArray($result)) {
         <div id="_acladd" style="display:none">
         <fieldset class="_collapsible">
 	<table class="_table">
-	<tr><td>ID:</td><td><input type="text" id="id" name="id" size=6 onChange="return _verify(this,'num');"></td></tr>
+	<tr><td>ID:</td><td><input type="text" id="id" name="id" size=6 onChange="return _verify(this,'num');"></td><!-- <td>Name:</td><td><input type="text" id="name" name="name"></td> --></tr>
 	<tr><td>Sequence:</td><td><input type="text" id="seq" name="seq" size=6 onChange="return _verify(this,'num');"><input type="hidden" name="oldseq"></td></tr>
 	<tr><td>Permission:</td><td><select name="permission"><?php
 		foreach ($perm_type as $i=>$j) {
@@ -291,6 +312,15 @@ $(document).ready(function() {
         $('#id').change(function() {
                 if (isNaN($(this).val())) {
                         alert("Only integers are allowed");
+                        $(this).val("");
+                        $(this).focus();
+                }
+        });
+
+        $('#name').change(function() {
+		var re = /^[a-zA-Z0-9 _\-]*$/;
+                if (!re.test($(this).val())) {
+                        alert("There characters being inputted that are not allowed");
                         $(this).val("");
                         $(this).focus();
                 }

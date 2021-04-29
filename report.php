@@ -141,7 +141,7 @@ if (@SQLNumRows($result) > 0) {
 	$result2 = @SQLQuery("SELECT FOUND_ROWS()", $dbi);
 	$_r = SQLFetchRow($result2);
 	echo "<legend>".$db_config->{'hosts'}[$_index]."</legend>".$_r[0]." rows found\n";
-	navi_buttons("_Report",$table,$_r[0],$offset,$vrows,$_index);
+	navi_buttons("_Report",$table,$_r[0],$offset,$vrows,$_index,'');
 	SQLFreeResult($result2);
 
 //	echo "<table border=1 cellspacing=1 cellpadding=2 class=\"_table2\">\n";

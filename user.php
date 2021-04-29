@@ -113,20 +113,6 @@ if ($debug) {
 	echo "<a href=\"javascript:_add('_useradd','1','";
 	if ($pass_complex->{'use_temp'}) echo $pass_complex->{'temp_pass'};
 	echo "');\" title=\"Add User\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?><!-- &nbsp; &nbsp;<a class="trig_popup" title="Search for user"><img src="images/search.gif" border="0" width="20"></img></a> --></legend>
-<!--
-<div class="popup_search">
-	<span class="search"</span>
-	<div>
-		<div class="popupClose">&times;</div>
-		<form id="_Search">
-		<table>
-			<tr><td>User:</td><td><input type="text" id="_uid" name="_uid"></td>
-			<tr><td><input type="submit"></td><td>&nbsp;</td>
-		</table>
-		</form>
-	</div>
-</div>
--->
 <table border=0 width="100%">
 <tr><td>
         <div id="_useradd" style="display:none">
@@ -302,6 +288,14 @@ $(document).ready(function() {
 		}
 	});
 
+	$('#pap').change(function() {
+		if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+			alert("Minimum pap length is "+<?php echo $pass_complex->{'pass_size'}; ?>);
+			$(this).val("");
+			$(this).focus();
+		}
+	});
+
 	$('#re_pap').change(function() {
 		if ($('#pap').val() != $(this).val()) {
 			alert("PAP does not match");
@@ -362,5 +356,20 @@ $(document).ready(function() {
 	});
 
 	$( "#expires" ).datetimepicker({dateFormat:'yy-mm-dd', timeInput: true, showHour:false, showMinute:false, showSecond:false, timeFormat: 'HH:mm:ss'});
+
+	$('#search').change(function() {
+		var new_src = src;
+		if ($(this).val()) {
+			var _s = $(this).val().indexOf("=");
+			if (_s > 0) {
+				new_src += "&"+$(this).val();
+			} else {
+				new_src += "&user="+$(this).val();
+			}
+		}
+		$.get(new_src, function (data, status) {
+			document.getElementById("_results0").innerHTML = data;
+		});
+	});
 });
 </script>

@@ -16,11 +16,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-function _Result(_table, _offset, _vrows, _index) {
+function _Result(_table, _offset, _vrows, _index, _search) {
         var src = "result.php?_ret=5&_table="+_table;
             src += "&offset=" + _offset;
             src += "&vrows=" + _vrows;
             src += "&_index=" + _index;
+	    src += "&" + _search;
 
         $.get(src, function(data,status) {
                 document.getElementById("_results"+_index).innerHTML = data;

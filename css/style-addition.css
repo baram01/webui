@@ -28,6 +28,9 @@
 .topnav a {
         text-decoration:none !important;
 }
+.topnav a:visited {
+	color:#0000ff;
+}
 .topnav a:hover, .dropdown:hover {
         background-color:#33E0FF !important;
         color:#ffffff !important;
@@ -59,6 +62,7 @@
   text-align: left;
 }
 
+.dropdown-content a:visited { color: black; }
 .dropdown-content a:hover {background-color: #fff;}
 
 .dropdown:hover .dropdown-content {

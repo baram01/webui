@@ -169,9 +169,11 @@ switch ($option) {
 	$network = preg_split('/\//', $ip);
 	$network6 = "";
 	$submask6 = "";
+	$netmask6 = "";
 	if (count($network)==1) {
 		$maskbits = 32;
 		$submask6 = Submask6(128);
+		$netmask6 = Netmask6(128);
 		if (preg_match("/:/", $network[0])) {
 			$network6 = $network[0];
 			$network[0] = "255.255.255.255";
@@ -184,18 +186,20 @@ switch ($option) {
 			$network[0]="255.255.255.255";
 			$maskbits = 32;
 			$submask6 = Submask6($network[1]);
+			$netmask6 = Netmask6($network[1]);
 		} else {
 			$network6 = "::FFFF:".$network[0];
 			$maskbits = $network[1];
 			$submask6 = Submask6(96+$maskbits);
+			$netmask6 = Netmask6(96+$maskbits);
 		}
 	}
 //	$crypt_enable = "";
 	// if ($enable) $crypt_enable = unixcrypt($enable);
 	if ($enable) {
-		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, network6, submask, submask6, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET6_ATON('$network6'),INET_ATON('".$netmask[$maskbits]."'),INET6_ATON('$submask6'),$loginacl,$enableacl,$vendor,1)", $dbi);
+		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
 	} else {
-		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, network6, submask, submask6, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','','$prompt1',INET_ATON('".$network[0]."'), INET6_ATON('$network6'), INET_ATON('".$netmask[$maskbits]."'), INET6_ATON('$submask6'), $loginacl,$enableacl,$vendor,1)", $dbi);
+		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','','$prompt1',INET_ATON('".$network[0]."'), INET_ATON('".$netmask[$maskbits]."'), $loginacl,$enableacl,$vendor,1)", $dbi);
 	}
         if (!@SQLError($dbi))
 		Audit("nas","add","IP=".$ip,$dbi);
@@ -363,6 +367,21 @@ $(document).ready(function() {
 <?php if (isset($group) && $group) echo "          src += \"&group=$group\";\n"; ?>
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
+        });
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&ip="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_results0").innerHTML = data;
+                });
         });
 });
 </script>

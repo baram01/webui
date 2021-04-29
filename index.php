@@ -18,6 +18,7 @@
 */
 
 require_once("config.php");
+require_once("version.php");
 require_once("mainfile.php");
 
 //$dbi=OpenDatabase($dbhost, $dbuname, $dbpass, $dbname);
@@ -116,7 +117,7 @@ label {
 </div></fieldset>
 <tr><td>
 <div class="topnav" id="topnav">
-<table border="0">
+<table border="0" style="float:left;">
 <tr>
 <?php
 if ($_ret) {
@@ -166,7 +167,7 @@ if ($_ret>=15) {
 	if (isset($menu) && $menu=="system") { echo "active";}
 	echo "\" href=\"javascript:void(0);\">System</a>\n";
 	echo "<div class=\"dropdown-content\" style=\"margin-top: 35px;\">"
-            ."<a href=\"?menu=system&module=suser\">Users</a>"
+            ."<a href=\"?menu=system&module=suser\">Admin Users</a>"
             ."<a href=\"?menu=system&module=sengine\">Engines</a>"
             ."<a href=\"?menu=system&module=sprov\">Provision</a>"
             ."<a href=\"?menu=system&module=ssite\">Site</a>"
@@ -175,14 +176,29 @@ if ($_ret>=15) {
 	    ."<a href=\"?menu=system&module=sload\">Load Vendor File</a>";
 	echo "</div></td>\n";
 }
-if ($_ret) {
-	$_usern = $username?$username:$_COOKIE["uname"];
-	echo "<td><a class=\"topnav-item nav-button\" href=\"javascript:logoff();\">Log off<br>".$_usern."</a></td>\n";
-}
 ?>
 </tr>
 </table>
-</div>
+<?php
+if ($_ret) {
+	$_usern = $username?$username:$_COOKIE["uname"];
+	echo "<div class=\"dropdown\" style=\"float:right\">\n";
+	echo "   <a class=\"topnav-item nav-button dropbtn\" href=\"javascript:void(0);\"><img src=\"images/login.gif\" style=\"width:30px;height:30px;\" title=\"".$_usern."\"></img></a>\n";
+	echo "   <div class=\"dropdown-content\" style=\"margin-top: 40px;\">\n";
+	echo "      <a href=\"javascript:void(0);\">Change Password</a>\n";
+	echo "      <a href=\"javascript:void(0);\">Profile</a>\n";
+	echo "      <a href=\"javascript:logoff();\">Log Off</a>\n";
+	echo "   </div>\n";
+	echo "</div>\n";
+}
+?>
+<tr><td><div id="_search">
+<?php
+	if (($menu=="admin") or ($module=="suser")) {
+		echo "<img src=\"images/search.gif\" title=\"search\" alt=\"Search\" style=\"width:15px;height:15px;\"></img> <input type=\"text\" name=\"search\" id=\"search\" size=\"100\">";
+	}
+?>
+</div><div id="_profile"></div>
 <tr><td>
 <table border=0 cellspacing=0 cellpadding=0 width="100%" height="250">
 <tr>

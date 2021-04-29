@@ -281,6 +281,21 @@ $(document).ready(function() {
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
         });
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&group="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_results0").innerHTML = data;
+                });
+        });
 });
 </script>
 
