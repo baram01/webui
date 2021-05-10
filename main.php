@@ -30,6 +30,8 @@ document.getElementById("_search").style="visibility:hidden";
 </fieldset>
 </div>
 
+<div id="dashboard"></div>
+
 <div id="login" class="_table">
        <form name="frmLogon" method="post" action="">
 	    <fieldset class=" collapsible"><legend>Admin Login</legend>
@@ -51,8 +53,6 @@ document.getElementById("_search").style="visibility:hidden";
         </form>
 </div>
 
-<div id="dashboard"></div>
-
 <?php
 
 if ($_MESSAGE) {
@@ -63,8 +63,8 @@ if ($_MESSAGE) {
 	echo "</div>\n";
 }
 
-if ($_ret) {
+//if ($_ret) {
 	echo "<script language=\"javascript\"> document.getElementById(\"login\").style.display=\"none\"; </script>\n";
-}
+//}
 
 ?>

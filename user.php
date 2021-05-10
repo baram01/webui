@@ -142,7 +142,7 @@ if ($debug) {
 		echo "<option value=\"$i\">$method";
 	} ?></select></td>
 	    <td>&nbsp;&nbsp;</td>
-    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
+    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20" autocomplete="off"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
 	<tr class="_passwords"><td colspan="4">Change Password at next login:&nbsp;&nbsp;<input type="checkbox" id="check_flags" name="check_flags" onclick="Javascript:_checked2(this,document.userform.flags,2)"><input type="hidden" name="flags" value="0"></td>
 	    <!-- <td>&nbsp;&nbsp;</td>
 	    <td></td> -->

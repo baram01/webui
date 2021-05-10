@@ -113,7 +113,7 @@ $(document).ready(function() {
 				ret = 1;
 			}
 
-			re = /(.)\1{<?php echo $pass_complex->{'multi'}; ?>}/g;
+			re = /(.)\<?php echo $pass_complex->{'multi'}; ?>+/g;
 			if (pass_multi && re.test($(this).val())) {
 				msg = msg + "most " + (pass_multi) + " consecutive characters";
 				ret = 1;

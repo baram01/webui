@@ -26,7 +26,7 @@ $dbi=OpenDatabase($db_config);
 
 if (checkLoginXML($_COOKIE["login"],$dbi) < 5) {
 	CloseDatabase($dbi);
-	return;
+	exit(1);
 }
 
 $sqlcmd = "";

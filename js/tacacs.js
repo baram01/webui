@@ -102,6 +102,10 @@ function logon(cvalue, etime) {
 	document.cookie = "login=" + cvalue + "; " + expires;
 }
 
+function login() {
+	document.getElementById("login").style.display = "";
+}
+
 function logoff() {
 	document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	document.cookie = "uname=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -247,4 +251,3 @@ function _SearchValue(attr_id, vid, vrows, div_id) {
                 $.get(src, func_Results_jq);
         }
 }
-

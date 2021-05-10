@@ -183,14 +183,18 @@ function _delete(uid) {
 	<tr><td>Disable:</td>
 	    <td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
 	    <td>Expire:</td>
-	    <td><input name="expire" id="expire" type="text"> <font size=-2>eg. 2021-01-09 00:00:00</font></td></tr>
+	    <td><input name="expire" id="expire" type="text" autocomplete="off"> <font size=-2>eg. 2021-01-09 00:00:00</font></td></tr>
 	<tr><td>Username:</td>
 	    <td><input id="uid" name="uid" type="text" size="25"></td>
 	    <td></td>
 	    <td></td></tr>
 	<tr><td>Comment:</td>
 	    <td colspan="3"><input id="comment" name="comment" type="text" size="50"></td> </tr>
-	<tr><td>Password:</td>
+	<tr><td>Linked:</td>
+	    <td><input name="admlink" type="checkbox"></td>
+	    <td><input type="hidden" name="link"></td>
+	    <td></td></tr>
+	<tr class="_passwords><td>Password:</td>
 	    <td><input name="password" type="password" size="25"></td>
 	    <td>Re-Password:</td>
 	    <td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
@@ -202,10 +206,6 @@ function _delete(uid) {
 		<option value="15">15 - Super User</option>
 		</select> </td>
 	    <td></td>
-	    <td></td></tr>
-	<tr><td>Linked:</td>
-	    <td><input name="admlink" type="checkbox"></td>
-	    <td><input type="hidden" name="link"></td>
 	    <td></td></tr>
 	<tr><td>Rows to view:</td>
 	    <td><select name="a_vrows">

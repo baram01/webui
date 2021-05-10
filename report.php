@@ -24,6 +24,7 @@ $dbi=OpenDatabase3($db_config, $_index);
 
 if (!checkLoginXML($_COOKIE["login"],$dbi)) {
         echo "<script language=\"JavaScript\"> top.location.href=\"index.php?module=main\"; </script>";
+	exit(1);
 }
 
 
@@ -139,8 +140,12 @@ $_ERROR = @SQLError($dbi);
 
 if (@SQLNumRows($result) > 0) {
 	$result2 = @SQLQuery("SELECT FOUND_ROWS()", $dbi);
-	$_r = SQLFetchRow($result2);
-	echo "<legend>".$db_config->{'hosts'}[$_index]."</legend>".$_r[0]." rows found\n";
+	$_r = @SQLFetchRow($result2);
+	$_f = @SQLNumRows($result);
+	echo "<legend>".$db_config->{'hosts'}[$_index]."</legend>".$_r[0]." rows found. ";
+	if ($_f == $vrows) { echo $vrows; }
+	else { echo $_f; }
+	echo " shown.\n";
 	navi_buttons("_Report",$table,$_r[0],$offset,$vrows,$_index,'');
 	SQLFreeResult($result2);
 

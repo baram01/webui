@@ -30,6 +30,7 @@ if (isset($_index)) {
 $_ret = checkLoginXML($_COOKIE["login"],$dbi);
 if (!$_ret) {
         echo "<script language=\"JavaScript\"> top.location.href=\"index.php?module=main\"; </script>";
+	exit (1);
 }
 
 $top = 200;

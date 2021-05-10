@@ -22,36 +22,74 @@ require_once("mainfile.php");
 
 $dbi=OpenDatabase($db_config);
 
-/*
-if (checkLoginXML($_COOKIE["login"],$dbi) < 1) {
+if (($fnc != "auth") & (checkLoginXML($_COOKIE["login"],$dbi) < 1)) {
 	CloseDatabase($dbi);
-	return;
+	exit(1);
 }
-*/
 
+$sql = "";
 $params = "*";
-$sqlcmd = "";
 $where = "";
+$table = "admin";
+$msg = "";
 
 switch ($fnc) {
 case "auth":
-	$params = "SELECT uid";
-        $where = "WHERE uid='$uid' AND ENCRYPT('$password', $field)=$field";
+	$sql = "SELECT";
+	$params = "uid,priv_lvl,vrows,link,disable,expire";
+        $where = "WHERE uid='$uid' AND ENCRYPT('$password', password)=password";
         break;
 
 case "change":
-	$where = "WHERE id='$vid'";
+	if (isset($password) && isset($oldpass)) {
+	   $result = @SQLQuery("SELECT link FROM admin WHERE uid='$uid' and ENCRYPT('$oldpass', password)=password", $dbi);
+	   if (@SQLNumRows($result) > 0) {
+		$row = @SQLFetchRow($result);
+		if ($row[0]==0) {
+			$result1 = @SQLQuery("UPDATE admin set password='".unixcrypt($password)."' WHERE uid='$uid'", $dbi);
+			if (@SQLAffectedRows($dbi)>0) {
+				$sql = "SELECT";
+				$params = "priv_lvl";
+				$where = "WHERE uid='$uid'";
+			}
+		} else {
+			$msg = "Account linked";
+		}
+	   } else {
+		$msg = "Old password not valid";
+	   }
+	}
 	break;
+
+case "verify":
+	$sql = "SELECT";
+	$params = "priv_lvl, disable";
+	$where = "WHERE ENCRYPT(uid,'$uid')='$uid'";
+	break;
+
+case "chgvrows":
+        $result = @SQLQuery("SELECT vrows FROM admin WHERE uid='$uid'", $dbi);
+        if (@SQLNumRows($result) > 0) {
+                $row = @SQLFetchRow($result); 
+                if ($row[0]!=$_vrows) {
+                        $result1 = @SQLQuery("UPDATE admin set vrows=$_vrows WHERE uid='$uid'", $dbi);
+                        if (@SQLAffectedRows($dbi)>0) {
+                                $sql = "SELECT";
+                                $params = "vrows";
+                                $where = "WHERE uid='$uid'";
+                        }
+                }
+        }
+        break;
 }
 
-$result = @SQLQuery("$params FROM user $where", $dbi);
+$result = @SQLQuery("$sql $params FROM $table $where", $dbi);
 $numrows = @SQLNumRows($result);
 if ($numrows > 0) {
 	$_i = 0;
 	$_json = array();
 
 	$_json[0]["pass"]=1;
-/*
 	while ($row=SQLFetchAssoc($result)) {
 		foreach ($row as $key => $value) {
 			$_json[$_i][$key] = $value;
@@ -59,11 +97,10 @@ if ($numrows > 0) {
 		$_i++;
 	}
 	SQLFreeResult($result);
-*/
 } else {
 	$_json = array();
 	$_json[0]["pass"]=0;
-
+	$_json[0]["message"]=$msg;
 }
 
 $output =  json_encode($_json);
