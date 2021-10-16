@@ -16,6 +16,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+10/16/2021 - Andrew Young
+	Remove ENCRYPT from SQL script to fix DB not supporting
 03/07/2021 - Andrew Young
 	Add IPv6 support
 04/12/2019 - Andrew Young
