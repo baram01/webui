@@ -138,6 +138,10 @@ function _required()
 		ret = false;
 	}
 		
+	if (! form.name.value) {
+		msg = msg + "Name is not required but recommended.\n";
+	}
+
 	if (! form.hkey.value) {
 		msg = msg + "HKEY is not required but recommended.\n";
 	}
@@ -197,7 +201,8 @@ switch ($option) {
 //	$crypt_enable = "";
 	// if ($enable) $crypt_enable = unixcrypt($enable);
 	if ($enable) {
-		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
+		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','".crypt($enable)."','$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
+		//$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey',ENCRYPT('$enable'),'$prompt1',INET_ATON('".$network[0]."'),INET_ATON('".$netmask[$maskbits]."'),$loginacl,$enableacl,$vendor,1)", $dbi);
 	} else {
 		$result = @SQLQuery("INSERT INTO host (ip, name, hostgroup, hkey, enable, prompt, network, submask, loginacl, enableacl, vendor, host) VALUES('$ip','$name','$hostgroup','$hkey','','$prompt1',INET_ATON('".$network[0]."'), INET_ATON('".$netmask[$maskbits]."'), $loginacl,$enableacl,$vendor,1)", $dbi);
 	}
@@ -207,8 +212,8 @@ switch ($option) {
    case 2:
 	$sqlcmd = "";
 	if (!$enable) $sqlcmd = ", enable=''";
-//	if ($re_enable) $sqlcmd = ", enable='".unixcrypt($enable)."'";
-	if ($re_enable) $sqlcmd = ", enable=ENCRYPT('$enable')";
+	if ($re_enable) $sqlcmd = ", enable='".crypt($enable)."'";
+//	if ($re_enable) $sqlcmd = ", enable=ENCRYPT('$enable')";
 	$result = @SQLQuery("UPDATE host SET name='$name', hostgroup='$hostgroup', hkey='$hkey', prompt='$prompt1', loginacl=$loginacl, enableacl=$enableacl, vendor=$vendor $sqlcmd WHERE ip='$ip'", $dbi);
         if (!@SQLError($dbi)) {
                 echo "<P><font color=\"green\">NAS($ip) modified.</font></P>";

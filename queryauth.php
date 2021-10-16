@@ -35,18 +35,22 @@ $msg = "";
 
 switch ($fnc) {
 case "auth":
+	$c_password = hash('sha256',$password);
 	$sql = "SELECT";
 	$params = "uid,priv_lvl,vrows,link,disable,expire";
-        $where = "WHERE uid='$uid' AND ENCRYPT('$password', password)=password";
+        $where = "WHERE uid='$uid' AND password='$c_password'";
+      //  $where = "WHERE uid='$uid' AND ENCRYPT('$password', password)=password";
         break;
 
 case "change":
 	if (isset($password) && isset($oldpass)) {
-	   $result = @SQLQuery("SELECT link FROM admin WHERE uid='$uid' and ENCRYPT('$oldpass', password)=password", $dbi);
+	   $result = @SQLQuery("SELECT link FROM admin WHERE uid='$uid' and password='".hash('sha256',$oldpass)."'", $dbi);
+	 //  $result = @SQLQuery("SELECT link FROM admin WHERE uid='$uid' and ENCRYPT('$oldpass', password)=password", $dbi);
 	   if (@SQLNumRows($result) > 0) {
 		$row = @SQLFetchRow($result);
 		if ($row[0]==0) {
-			$result1 = @SQLQuery("UPDATE admin set password='".unixcrypt($password)."' WHERE uid='$uid'", $dbi);
+			$result1 = @SQLQuery("UPDATE admin set password='".hash('sha256',$password)."' WHERE uid='$uid'", $dbi);
+	//		$result1 = @SQLQuery("UPDATE admin set password='".unixcrypt($password)."' WHERE uid='$uid'", $dbi);
 			if (@SQLAffectedRows($dbi)>0) {
 				$sql = "SELECT";
 				$params = "priv_lvl";
@@ -64,7 +68,8 @@ case "change":
 case "verify":
 	$sql = "SELECT";
 	$params = "priv_lvl, disable";
-	$where = "WHERE ENCRYPT(uid,'$uid')='$uid'";
+	$where = "WHERE SHA2(uid,256)='$uid'";
+//	$where = "WHERE ENCRYPT(uid,'$uid')='$uid'";
 	break;
 
 case "chgvrows":

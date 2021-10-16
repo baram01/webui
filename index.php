@@ -18,7 +18,7 @@
 */
 
 require_once("config.php");
-require_once("version.php");
+//require_once("version.php");
 require_once("mainfile.php");
 
 //$dbi=OpenDatabase($dbhost, $dbuname, $dbpass, $dbname);
@@ -67,8 +67,9 @@ if (!isset($_SERVER['HTTPS'])) {
 		$_MESSAGE = "Please configure and load SSL module";
 	}
 }
+
 ?>
-<meta name="viewport" contact="width=device-width, initial-scale=1">
+<meta name="viewport" contact="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <link rel="stylesheet" type="text/css" href="css/style-addition.css">
 <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css">
@@ -210,9 +211,11 @@ if ($_ret) {
 ?>
 <tr><td><div id="_search">
 <?php
+   if (isset($menu)) {
 	if (($menu=="admin") or ($module=="suser")) {
 		echo "<img src=\"images/search.gif\" title=\"search\" alt=\"Search\" style=\"width:15px;height:15px;\"></img> <input type=\"text\" name=\"search\" id=\"search\" size=\"100\">";
 	}
+   }
 ?> </div>
 
 <div id="cdialog-form" title="Change Password">

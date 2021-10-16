@@ -51,7 +51,8 @@ switch ($option) {
   case 1:
 	if (isset($uid)&&!empty($uid)) {
 	    $sqlcmd = "INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, shell, homedir, user, flags";
-	$sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
+	    $sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth,'".hash('sha256',$password)."','".hash('sha256',$enable)."','$arap','".hash('sha256',$pap)."','$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
+//	$sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
 	    $sqlcmd .= ")";
 	    $result = @SQLQuery("$sqlcmd", $dbi);
 	    if (!@SQLError($dbi)) {
@@ -71,10 +72,16 @@ switch ($option) {
 	if (!isset($b_author)) $b_author = "";
 	if (!isset($a_author)) $a_author = "";
 	$sqlcmd = "UPDATE user set id=$id, gid='$gid', comment='$comment', auth=$auth, expires='$expires', disable=$disable, b_author='$b_author',a_author='$a_author',svc_dflt=$svc_dflt,cmd_dflt=$cmd_dflt,maxsess=$maxsess,acl_id=$acl_id, shell='$shell', homedir='$homedir'";
-	if ($re_password) $sqlcmd .= ", password=ENCRYPT('$password')";
-	if ($re_enable) $sqlcmd .= ", enable=ENCRYPT('$enable')";
+	if ($re_password) $sqlcmd .= ", password='".crypt($password)."'";
+//	if ($re_password) $sqlcmd .= ", password='".hash('sha256',$password)."'";
+//	if ($re_password) $sqlcmd .= ", password=ENCRYPT('$password')";
+	if ($re_enable) $sqlcmd .= ", enable='".crypt($enable)."'";
+//	if ($re_enable) $sqlcmd .= ", enable='".hash('sha256',$enable)."'";
+//	if ($re_enable) $sqlcmd .= ", enable=ENCRYPT('$enable')";
 	if ($re_arap) $sqlcmd .= ", arap='$arap'";
-	if ($re_pap) $sqlcmd .= ", pap=ENCRYPT('$pap')";
+	if ($re_pap) $sqlcmd .= ", pap='".crypt($pap)."'";
+//	if ($re_pap) $sqlcmd .= ", pap='".hash('sha256',$pap)."'";
+//	if ($re_pap) $sqlcmd .= ", pap=ENCRYPT('$pap')";
 	if ($re_chap) $sqlcmd .= ", chap='$chap'";
 	if ($re_mschap) $sqlcmd .= ", mschap='$mschap'";
 	$sqlcmd .= ", flags=$flags";

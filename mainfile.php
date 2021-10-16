@@ -1,4 +1,6 @@
 <?php
+require_once("version.php");
+
 $banner = "WebUI";
 //$version = "5.0";
 //$release = "b5";
@@ -353,9 +355,10 @@ function SQLAffectedRows($id)
 
 function Login($name, $pass, $id)
 {
-	global $_crypt_uname, $_privlvl, $vrows, $_lmsg;
+	global $_crypt_uname, $_privlvl, $vrows, $_lmsg, $_ERROR;
 	$ret = 0;
-	$result = SQLQuery("SELECT ENCRYPT(uid), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
+	$result = SQLQuery("SELECT SHA2(uid,256), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
+//	$result = SQLQuery("SELECT ENCRYPT(uid), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$_crypt_uname = $row[0];
@@ -369,11 +372,15 @@ function Login($name, $pass, $id)
 			$row = SQLFetchRow($result);
 			$_expires = $row[2];
 		   }
+		   if (is_null($_expires)) {
+			   $_expires = "0000-00-00 00:00:00";
+		   }
 		   if (strcmp($_expires,"0000-00-00 00:00:00")) {
 			$now_ = strtotime("now");
 			$expires_ = strtotime($_expires);
 			if ($now_ <= $expires_) {
-			    if (crypt($pass, $row[1]) == $row[1]) {
+//			    if (crypt($pass, $row[1]) == $row[1]) {
+			    if (hash('sha256',$pass) == $row[1]) {
 				$ret = $_privlvl;
 		     	    } else {
 				$_lmsg = "bad login";
@@ -382,7 +389,8 @@ function Login($name, $pass, $id)
 				$_lmsg = "expired";
 			}
 		   } else {
-			if (crypt($pass, $row[1]) == $row[1]) {
+//			if (crypt($pass, $row[1]) == $row[1]) {
+			if (hash('sha256',$pass) == $row[1]) {
 				$ret = $_privlvl;
 			} else {
 				$_lmsg = "bad login";
@@ -402,7 +410,8 @@ function checkLogin($name, $id)
 
 	$ret = 0;
 
-	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+//	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE SHA2(uid,256)='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$ret = $row[0];
@@ -420,7 +429,8 @@ function checkLoginXML($name, $id)
 {
 	$ret = 0;
 
-	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+//	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE SHA2(uid,256)='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$ret = $row[0];
@@ -452,8 +462,9 @@ function updateOther($field, $uid, $oldpass, $newpass, $id)
 	global $_ERROR;
 	$ret = 0;
 
-	$c_newpass = unixcrypt($newpass);
-	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $uid, $oldpass);
+	$c_newpass = crypt($newpass);
+	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND password'%s'", $field, $c_newpass, $uid, $oldpass);
+//	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $uid, $oldpass);
 
 	$res = SQLQuery($sqlcmd, $id); 
 	if (SQLAffectedRows($id)) {
@@ -469,8 +480,10 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 	$ret = 0;
 
 	if ($field === "password") {
+		$c_newpass = crypt($newpass);
 		//check for old password reuse
-		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND ENCRYPT('$newpass',password)=password",$id);
+//		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND ENCRYPT('$newpass',password)=password",$id);
+		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND password='$c_newpass'",$id);
 		$rows = SQLAffectedRows($id);
 		if ($rows) { SQLFreeResult($result); }
 	} else {
@@ -478,16 +491,21 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 	}
 	if ($rows==0) {
 		if (!empty($newpass)) {
-			$c_newpass = unixcrypt($newpass);
+		//	$c_newpass = hash('sha256',$newpass);
+		//	$c_oldpass = hash('sha256',$oldpass);
+			$c_newpass = crypt($newpass);
+			$c_oldpass = crypt($oldpass);
 			if ($field  === "password") {
 				$_sql_expires = ", expires=DATE_ADD(CURDATE(), INTERVAL ".$pass_complex->{'expiretime'}." DAY)";
 			}
-			$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $oldpass);
+			$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND password='%s'", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $c_oldpass);
+		//	$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $oldpass);
 			$result = SQLQuery($sqlcmd, $id); 
 			$ret = SQLAffectedRows($id);
 			if (($ret > 0) && ($field === "password")) {
 				//Insert old password into old password table
-				$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".unixcrypt($oldpass)."')", $id);
+				$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".$c_oldpass."')", $id);
+			//	$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".crypt($oldpass)."')", $id);
 				// Delete oldest password if greater than pass_complex_repeat
 				$result2 = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' ORDER BY ts ASC", $id);
 				$rows = SQLAffectedRows($id);
@@ -511,10 +529,14 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 
 function verifyPassword($field, $uid, $password, $id)
 {
+	global $_ERROR;
 	$ret = 0;
 
 	if (!empty($password)) {
-		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND ENCRYPT('$password',$field)=$field", $id);
+		//$c_passwd = hash('sha256',$password);
+		$c_passwd = crypt($password);
+		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND $field='$c_passwd'", $id);
+	//	$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND ENCRYPT('$password',$field)=$field", $id);
 		$ret = SQLAffectedRows($id);
 	}
 

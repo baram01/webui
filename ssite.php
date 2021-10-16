@@ -115,7 +115,7 @@ function _checkSiteReq() {
 -->
 <?php
 	if ($site_config->{'init'}) {
-		$_uuid=shell_exec('/usr/bin/uuid');
+		$_uuid=shell_exec('/usr/bin/uuidgen');
 		echo "
 	<tr><td colspan=\"5\"><font color=\"red\">Initial Configuration</font> - please enter License key if receive one, WebUI FQDN if different, Company Name, Company Logo if have one and Legal message</td></tr>
 	<tr><td colspan=\"5\">&nbsp;</td></tr>
@@ -126,7 +126,7 @@ function _checkSiteReq() {
 	    <td></td>
 	    <td><input name=\"site_init\" value=\"0\" type=\"hidden\"></td></tr>
 		";
-		$site_config->{'webui'}="https://".$_SERVER['HTTP_HOST'];
+		$site_config->{'webui'}="https://".$_SERVER['SERVER_ADDR'];
 	} else {
 		echo "
 	<tr><td>UUID:</td><td colspan=\"3\"><input name=\"uuid\" id=\"uuid\" type=\"text\" size=\"40\" value=\"".$site_config->{'uuid'}."\" readonly></td>

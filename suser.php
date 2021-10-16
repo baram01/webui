@@ -40,7 +40,10 @@ switch ($option) {
 		} else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 		if ($expire=="") $expire="0000-00-00 00:00:00";
-		$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,unixcrypt($password),$priv_lvl,0,$a_vrows,$disable,$expire);
+	//	$c_password = crypt($password);
+		$c_password = hash('sha256',$password);
+	//	$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,unixcrypt($password),$priv_lvl,0,$a_vrows,$disable,$expire);
+		$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,$c_password,$priv_lvl,0,$a_vrows,$disable,$expire);
 	}
 	break;
 
@@ -53,7 +56,8 @@ switch ($option) {
 		 } else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 //		if ($re_password) $re_password = ", password=ENCRYPT('$password')";
-		if ($re_password) $re_password = ", password='".unixcrypt($password)."'";
+	//	if ($re_password) $re_password = ", password='".unixcrypt($password)."'";
+		if ($re_password) $re_password = ", password='".hash('sha256',$password)."'";
 		$sqlcmd = "UPDATE admin set comment='$comment', priv_lvl=$priv_lvl, link=0, vrows=$a_vrows, disable=$disable, expire='$expire' $re_password WHERE uid='$uid'";
 	}
 	break;
@@ -194,7 +198,7 @@ function _delete(uid) {
 	    <td><input name="admlink" type="checkbox"></td>
 	    <td><input type="hidden" name="link"></td>
 	    <td></td></tr>
-	<tr class="_passwords><td>Password:</td>
+	<tr class="_passwords"><td>Password:</td>
 	    <td><input name="password" type="password" size="25"></td>
 	    <td>Re-Password:</td>
 	    <td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
