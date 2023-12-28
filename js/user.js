@@ -198,7 +198,9 @@ function _add(obj, user, password) {
 
         if (resultForm.option.value == "2") {
                 resultForm.uid.disabled = false;
-		if (user == 1) resultForm.check_lock.disabled = true;
+		if (user == 1) {
+			resultForm.check_lock.disabled = true;
+		}
                 resultForm.option.value = "1";
                 resultForm._submit.value = "Add";
                	resultForm.id.value = resultForm._lastID.value;
@@ -211,6 +213,8 @@ function _add(obj, user, password) {
                	resultForm.expires.value = '';
                	resultForm.password.value = password;
                	resultForm.re_password.value = password;
+                resultForm.enable.value = password;
+                resultForm.re_enable.value = password;
 		resultForm.b_author.value = '';
 		resultForm.a_author.value = '';
 		resultForm.svc_dflt.value = "0";
@@ -223,8 +227,13 @@ function _add(obj, user, password) {
 		resultForm.homedir = '';
         } else {
                	resultForm.id.value = resultForm._lastID.value;
+		if (user == 1) {
+			document.getElementById("check_flags").checked = true;
+		}
                 resultForm.password.value = password;
                 resultForm.re_password.value = password;
+                resultForm.enable.value = password;
+                resultForm.re_enable.value = password;
                 addMe(obj);
         }
 }
@@ -237,6 +246,8 @@ function _modify(pid, uid, user) {
 	resultForm.option.value = "2";
 	resultForm.password.value = "";
 	resultForm.re_password.value = "";
+	resultForm.enable.value = "";
+	resultForm.re_enable.value = "";
 	resultForm._submit.value = "Modify";
 	document.getElementById("_useradd").style.display = "";
 	resultForm.id.focus();
@@ -291,6 +302,8 @@ function _open_contact(uid, obj) {
 		document.getElementById("titleName").innerHTML = "Contact Information";
 		showMe();
 		document.getElementById("_nodeframe").src = "contact.php?_ret=5&id="+this.id+"&uid="+uid.value+"&update=1";
+	} else {
+		document.getElementById("uid").focus();
 	}
 }
 

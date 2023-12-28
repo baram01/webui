@@ -1,7 +1,9 @@
 <?php
-$banner = "Web UI";
-$version = "5.0";
-$release = "b2.5g";
+require_once("version.php");
+
+$banner = "WebUI";
+//$version = "5.0";
+//$release = "b5";
 $copyrights_dates = "2002-2021";
 $pagetitle = "WebUI $version$release";
 
@@ -353,9 +355,10 @@ function SQLAffectedRows($id)
 
 function Login($name, $pass, $id)
 {
-	global $_crypt_uname, $_privlvl, $vrows, $_lmsg;
+	global $_crypt_uname, $_privlvl, $vrows, $_lmsg, $_ERROR;
 	$ret = 0;
-	$result = SQLQuery("SELECT ENCRYPT(uid), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
+	$result = SQLQuery("SELECT SHA2(uid,256), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
+//	$result = SQLQuery("SELECT ENCRYPT(uid), password, priv_lvl, link, vrows, disable, expire FROM admin WHERE uid='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$_crypt_uname = $row[0];
@@ -369,11 +372,15 @@ function Login($name, $pass, $id)
 			$row = SQLFetchRow($result);
 			$_expires = $row[2];
 		   }
+		   if (is_null($_expires)) {
+			   $_expires = "0000-00-00 00:00:00";
+		   }
 		   if (strcmp($_expires,"0000-00-00 00:00:00")) {
 			$now_ = strtotime("now");
 			$expires_ = strtotime($_expires);
 			if ($now_ <= $expires_) {
-			    if (crypt($pass, $row[1]) == $row[1]) {
+//			    if (crypt($pass, $row[1]) == $row[1]) {
+			    if (hash('sha256',$pass) == $row[1]) {
 				$ret = $_privlvl;
 		     	    } else {
 				$_lmsg = "bad login";
@@ -382,7 +389,8 @@ function Login($name, $pass, $id)
 				$_lmsg = "expired";
 			}
 		   } else {
-			if (crypt($pass, $row[1]) == $row[1]) {
+//			if (crypt($pass, $row[1]) == $row[1]) {
+			if (hash('sha256',$pass) == $row[1]) {
 				$ret = $_privlvl;
 			} else {
 				$_lmsg = "bad login";
@@ -402,7 +410,8 @@ function checkLogin($name, $id)
 
 	$ret = 0;
 
-	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+//	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+	$result = SQLQuery("SELECT priv_lvl,vrows FROM admin WHERE SHA2(uid,256)='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$ret = $row[0];
@@ -420,7 +429,8 @@ function checkLoginXML($name, $id)
 {
 	$ret = 0;
 
-	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+//	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE ENCRYPT(uid,'$name')='$name'", $id);
+	$result = SQLQuery("SELECT priv_lvl FROM admin WHERE SHA2(uid,256)='$name'", $id);
 	if (SQLNumRows($result)>0) {
 		$row = SQLFetchRow($result);
 		$ret = $row[0];
@@ -447,14 +457,33 @@ function checkCookie($value, $value1, $id)
 	return $ret;
 }
 
+function updateOther($field, $uid, $oldpass, $newpass, $id)
+{
+	global $_ERROR;
+	$ret = 0;
+
+	$c_newpass = crypt($newpass);
+	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND password'%s'", $field, $c_newpass, $uid, $oldpass);
+//	$sqlcmd = sprintf("UPDATE user set %s='%s' WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $uid, $oldpass);
+
+	$res = SQLQuery($sqlcmd, $id); 
+	if (SQLAffectedRows($id)) {
+		$ret = 1;
+	}
+
+	return $ret;
+}
+
 function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 {
 	global $_ERROR, $pass_complex;
 	$ret = 0;
 
 	if ($field === "password") {
+		$c_newpass = crypt($newpass);
 		//check for old password reuse
-		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND ENCRYPT('$newpass',password)=password",$id);
+//		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND ENCRYPT('$newpass',password)=password",$id);
+		$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' AND password='$c_newpass'",$id);
 		$rows = SQLAffectedRows($id);
 		if ($rows) { SQLFreeResult($result); }
 	} else {
@@ -462,29 +491,32 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 	}
 	if ($rows==0) {
 		if (!empty($newpass)) {
-			$c_newpass = unixcrypt($newpass);
+		//	$c_newpass = hash('sha256',$newpass);
+		//	$c_oldpass = hash('sha256',$oldpass);
+			$c_newpass = crypt($newpass);
+			$c_oldpass = crypt($oldpass);
 			if ($field  === "password") {
 				$_sql_expires = ", expires=DATE_ADD(CURDATE(), INTERVAL ".$pass_complex->{'expiretime'}." DAY)";
 			}
-//			$sqlcmd = sprintf("UPDATE user set %s=ENCRYPT('%s') %s, flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $newpass, $_sql_expires, $uid, $oldpass);
-			$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $oldpass);
+			$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND password='%s'", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $c_oldpass);
+		//	$sqlcmd = sprintf("UPDATE user set %s='%s', expires=DATE_ADD(CURDATE(), INTERVAL %d DAY), flags=0 WHERE uid='%s' AND ENCRYPT('%s',password)=password", $field, $c_newpass, $pass_complex->{'expiretime'}, $uid, $oldpass);
 			$result = SQLQuery($sqlcmd, $id); 
 			$ret = SQLAffectedRows($id);
 			if (($ret > 0) && ($field === "password")) {
 				//Insert old password into old password table
-				$result = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".unixcrypt($oldpass)."')", $id);
-		//		$result = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid',ENCRYPT('$oldpass'))", $id);
+				$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".$c_oldpass."')", $id);
+			//	$result2 = SQLQuery("INSERT INTO oldpass (uid, password) VALUE ('$uid','".crypt($oldpass)."')", $id);
 				// Delete oldest password if greater than pass_complex_repeat
-				$result = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' ORDER BY ts ASC", $id);
+				$result2 = SQLQuery("SELECT ts FROM oldpass WHERE uid='$uid' ORDER BY ts ASC", $id);
 				$rows = SQLAffectedRows($id);
 				if ($rows >= $pass_complex->{'repeat'}) {
-					$_row = SQLFetchArray($result);
+					$_row = SQLFetchArray($result2);
 					$_ERROR += $_row[0];
-					$result = SQLQuery("DELETE FROM oldpass WHERE ts = '$_row[0]'");
+					$result3 = SQLQuery("DELETE FROM oldpass WHERE ts = '$_row[0]'", $id);
 					if (SQLAffectedRows($id)) {
 						$_ERROR += " Deleted old password for $uid on timestamp '$_row[0]'";
 					}
-					SQLFreeResult($result);
+					SQLFreeResult($result2);
 				}
 			}
 		}
@@ -497,10 +529,14 @@ function updatePassword($field, $uid, $oldpass, $newpass, $expiretime, $id)
 
 function verifyPassword($field, $uid, $password, $id)
 {
+	global $_ERROR;
 	$ret = 0;
 
 	if (!empty($password)) {
-		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND ENCRYPT('$password',$field)=$field", $id);
+		//$c_passwd = hash('sha256',$password);
+		$c_passwd = crypt($password);
+		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND $field='$c_passwd'", $id);
+	//	$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid' AND ENCRYPT('$password',$field)=$field", $id);
 		$ret = SQLAffectedRows($id);
 	}
 
@@ -525,21 +561,73 @@ function Audit($service, $status, $_what, $dbi)
 
 }
 
-function navi_buttons($_func, $_table, $_rows, $_offset, $_vrows, $_index)
+function navi_buttons($_func, $_table, $_rows, $_offset, $_vrows, $_index,$_search)
 {       
         if ($_rows>$_vrows) {
                 echo "<div class=\"navi\" id=\"navi\">";
                 if ($_offset) {
-                        echo "<a href=\"javascript:$_func('$_table',0,$_vrows,$_index);\" class=\"navi-item navi-round\">&#8249&#8249</a>";
+                        echo "<a href=\"javascript:$_func('$_table',0,$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8249&#8249</a>";
                         $ppos = ($_offset-$_vrows)<0?0:($_offset-$_vrows);
-                        echo "<a href=\"javascript:$_func('$_table',$ppos,$_vrows,$_index);\" class=\"navi-item navi-round\">&#8249</a>";
+                        echo "<a href=\"javascript:$_func('$_table',$ppos,$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8249</a>";
                 }
                 if (($_offset+$_vrows)<$_rows) {
-                        echo "<a href=\"javascript:$_func('$_table',".($_offset+$_vrows).",$_vrows,$_index);\" class=\"navi-item navi-round\">&#8250</a>";
+                        echo "<a href=\"javascript:$_func('$_table',".($_offset+$_vrows).",$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8250</a>";
                 }
-                echo "<a href=\"javascript:$_func('$_table',".($_rows-$_vrows).",$_vrows,$_index);\" class=\"navi-item navi-round\">&#8250&#8250</a>";
+                echo "<a href=\"javascript:$_func('$_table',".($_rows-$_vrows).",$_vrows,$_index,$_search);\" class=\"navi-item navi-round\">&#8250&#8250</a>";
                 echo "</div>\n";
         }
+}
+
+// Submask6
+function Submask6($sub_bit)
+{
+	$int_size = PHP_INT_SIZE * 8;
+	$val = -1;
+	$_submask = "";
+
+	for ($i=0; $i < (128/$int_size); $i++) {
+		$places = ($int_size<$sub_bit)?0:$int_size-$sub_bit;
+		$res = $val << $places;
+
+		if ($res) {
+			$chunk = str_split(dechex($res), 4);
+			$_submask .= implode(':', $chunk);
+		} else {
+			if ($int_size == 32) {
+				$_submask .= "0000:0000";
+			} else {
+				$_submask .= "0000:0000:0000:0000";
+			}
+		}
+
+		if ($i < (128/$int_size)-1) {
+			$_submask .= ":";
+		}
+		$sub_bit -= $int_size;
+	}
+
+	return $_submask;
+}
+
+function Netmask6($subnet) {
+	$mask = "";
+
+	if ($subnet) {
+		$len = PHP_INT_SIZE * 8;
+		if ($subnet > $len) $subnet = $len;
+
+		$mask = str_repeat('f', $subnet>>2);
+
+		switch ($subnet & 3) {
+			case 3: $mask .= 'e'; break;
+			case 2: $mask .= 'c'; break;
+			case 1: $mask .= '8'; break;
+		}
+		$mask = str_pad($mask, $len>>2, '0');
+		$mask = pack('H*', $mask);
+	}
+
+	return $mask;
 }
 
 foreach ($_POST as $key=>$val) {

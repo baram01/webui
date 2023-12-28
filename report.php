@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2020 3Youngs, Inc
+    Copyright (C) 2021 3Youngs, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ $dbi=OpenDatabase3($db_config, $_index);
 
 if (!checkLoginXML($_COOKIE["login"],$dbi)) {
         echo "<script language=\"JavaScript\"> top.location.href=\"index.php?module=main\"; </script>";
+	exit(1);
 }
 
 
@@ -139,9 +140,13 @@ $_ERROR = @SQLError($dbi);
 
 if (@SQLNumRows($result) > 0) {
 	$result2 = @SQLQuery("SELECT FOUND_ROWS()", $dbi);
-	$_r = SQLFetchRow($result2);
-	echo "<legend>".$db_config->{'hosts'}[$_index]."</legend>".$_r[0]." rows found\n";
-	navi_buttons("_Report",$table,$_r[0],$offset,$vrows,$_index);
+	$_r = @SQLFetchRow($result2);
+	$_f = @SQLNumRows($result);
+	echo "<legend>".$db_config->{'hosts'}[$_index]."</legend>".$_r[0]." rows found. ";
+	if ($_f == $vrows) { echo $vrows; }
+	else { echo $_f; }
+	echo " shown.\n";
+	navi_buttons("_Report",$table,$_r[0],$offset,$vrows,$_index,'');
 	SQLFreeResult($result2);
 
 //	echo "<table border=1 cellspacing=1 cellpadding=2 class=\"_table2\">\n";
@@ -162,7 +167,7 @@ if (@SQLNumRows($result) > 0) {
 		break;
 
            case "audit":
-                echo "<tr><th>Date</th><th>User</th><th>Client IP</th><th>Service</th><th>Status</th><th>Changed</th></tr>\n";
+                echo "<tr><th>Date</th><th>User</th><th>User IP</th><th>Service</th><th>Status</th><th>Changed</th></tr>\n";
                 break;
 
 	}

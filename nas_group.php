@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -160,16 +160,17 @@ function _required()
 switch ($option) {
    case 1:
 	$crypt_enable = "''";
-//	if ($enable) $crypt_enable = unixcrypt($enable);
-	if ($enable) $crypt_enable = "ENCRYPT('$enable')";
-	$result = @SQLQuery("INSERT INTO host (ip, hkey, enable, prompt, loginacl, enableacl, vendor, host) VALUES('$ip','$hkey',$crypt_enable,'$prompt1',$loginacl,$enableacl,$vendor,2)", $dbi);
+	if ($enable) $crypt_enable = crypt($enable);
+//	if ($enable) $crypt_enable = "ENCRYPT('$enable')";
+	$result = @SQLQuery("INSERT INTO host (ip, hkey, enable, prompt, loginacl, enableacl, vendor, host) VALUES('$ip','$hkey','$crypt_enable','$prompt1',$loginacl,$enableacl,$vendor,2)", $dbi);
 	if (!@SQLError($dbi))
 		Audit("nas_group","add","GROUP=".$ip,$dbi);
 	break;
    case 2:
 	$sqlcmd = "";
 	if (!$enable) $sqlcmd = ", enable=''";
-	if ($re_enable) $sqlcmd = ", enable=ENCRYPT('$enable')";
+	if ($re_enable) $sqlcmd = ", enable='".crypt($enable)."'";
+//	if ($re_enable) $sqlcmd = ", enable=ENCRYPT('$enable')";
 	$result = @SQLQuery("UPDATE host SET hkey='$hkey', prompt='$prompt1', loginacl=$loginacl, enableacl=$enableacl, vendor=$vendor $sqlcmd WHERE ip='$ip'", $dbi);
         if (!@SQLError($dbi)) {
                 echo "<P><font color=\"green\">NAS Group($ip) modified.</font></P>";
@@ -280,6 +281,21 @@ $(document).ready(function() {
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
+        });
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&group="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_results0").innerHTML = data;
+                });
         });
 });
 </script>

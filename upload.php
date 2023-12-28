@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2019  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
 
 
 
@@ -54,6 +54,7 @@ case 1: //Process vendor file
 		                if ($keywords[0] == 'VENDOR') {
 		                        $vendor = $keywords[2];
 		                        $sqlcmd = "INSERT INTO vendor (id, name) VALUES (".$keywords[2].",'".$keywords[1]."')";
+					$nv++;
 		                }
 		        }
 		        if (strpos($buffer, 'ATTRIBUTE') !== false) {
@@ -77,7 +78,7 @@ case 1: //Process vendor file
 		    fclose($handle);
 		    unlink($location);
 
-		    if ($nv) {
+		    if ($nv >= 2) {
 			echo "{\"status\":0, \"message\":\"File processed\"}";
 		    } else {
 			echo "{\"status\":3, \"message\":\"Not dictionary file\"}";

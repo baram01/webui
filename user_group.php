@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,7 +41,9 @@ if (!isset($gid)) $gid="";
 
 switch ($option) {
   case 1:
-	$result = @SQLQuery("INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, user) VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,2)", $dbi);
+	$result = @SQLQuery("INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, user) VALUES ($id, '$uid', '$gid', '$comment', $auth,'".crypt($password)."','".crypt($enable)."','$arap','".crypt($pap)."','$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,2)", $dbi);
+//	$result = @SQLQuery("INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, user) VALUES ($id, '$uid', '$gid', '$comment', $auth,'".hash('sha256',$password)."','".hash('sha256',$enable)."','$arap','".hash('sha256',$pap)."','$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,2)", $dbi);
+//	$result = @SQLQuery("INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, user) VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,2)", $dbi);
 	if (!@SQLError($dbi)) {
 		echo "<P><font color=\"red\"> Group($uid) added.</font></P>";
 		Audit("user_group","add","UID=".$uid,$dbi);
@@ -49,11 +51,14 @@ switch ($option) {
 	break;
   case 2:
         $sqlcmd = "UPDATE user set comment='$comment', gid='$gid', auth=$auth, expires='$expires', disable=$disable, b_author='$b_author', a_author='$a_author', svc_dflt=$svc_dflt, cmd_dflt=$cmd_dflt, maxsess=$maxsess, acl_id=$acl_id, shell='$shell', homedir='$homedir'";
-        if ($re_password) $sqlcmd .= ", password='".unixcrypt($password)."'";
+       // if ($re_password) $sqlcmd .= ", password='".hash('sha256',$password)."'";
+        if ($re_password) $sqlcmd .= ", password='".crypt($password)."'";
        // if ($re_password) $sqlcmd .= ", password=ENCRYPT('$password')";
-        if ($re_enable) $sqlcmd .= ", enable='".unixcrypt($enable)."'";
+       // if ($re_enable) $sqlcmd .= ", enable='".hash('sha256',$enable)."'";
+        if ($re_enable) $sqlcmd .= ", enable='".crypt($enable)."'";
        // if ($re_enable) $sqlcmd .= ", enable=ENCRYPT('$enable')";
-        if ($re_pap) $sqlcmd .= ", pap='".unixcrypt($pap)."'";
+       // if ($re_pap) $sqlcmd .= ", pap='".hash('sha256',$pap)."'";
+        if ($re_pap) $sqlcmd .= ", pap='".crypt($pap)."'";
        // if ($re_pap) $sqlcmd .= ", pap=ENCRYPT('$pap')";
         if ($re_arap) $sqlcmd .= ", arap='$arap'";
         if ($re_chap) $sqlcmd .= ", chap='$chap'";
@@ -109,7 +114,7 @@ if ($debug) {
 		echo "<option value=\"$i\">$method</option>";
 	} ?></td>
 	    <td>&nbsp;&nbsp;</td>
-    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
+    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20" autocomplete="off"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
     	<tr class="_passwords"><td width="50">Password:</td><td><input id="password" type="password" name="password" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Re-Password:</td><td><input type="password" id="re_password" name="re_password" size="20"></td>
@@ -255,6 +260,21 @@ $(document).ready(function() {
             src += "&offset=0&vrows="+admin_vrows+"&_index=0";
         $.get(src, function (data, status) {
                 document.getElementById("_results0").innerHTML = data;
+        });
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&group="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_results0").innerHTML = data;
+                });
         });
 });
 </script>

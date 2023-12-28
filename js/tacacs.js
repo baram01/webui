@@ -102,6 +102,10 @@ function logon(cvalue, etime) {
 	document.cookie = "login=" + cvalue + "; " + expires;
 }
 
+function login() {
+	document.getElementById("login").style.display = "";
+}
+
 function logoff() {
 	document.cookie = "login=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 	document.cookie = "uname=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
@@ -138,6 +142,7 @@ function _checkpass(obj, obj1) {
 function _verify(obj, type)
 {
         var ret = true;
+	var msg = "";
 
         if (type == "integer") {
                 var anum=/(^\d+$)/;
@@ -166,25 +171,37 @@ function _verify(obj, type)
                 s = obj.value.split('/');
 		var ipPattern = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 		var ipArray = s[0].match(ipPattern);
+		var ip6Pattern = /^((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$/g;
+		var ip6Array = s[0].match(ip6Pattern);
 
                 if (s[1] != null) {
-                        if ((s[1]<0)||(s[1]>32)) {
-                                alert("Not a valid IP maskbits");
+			if (ipArray) {
+                            if ((s[1]<0)||(s[1]>32)) {
+                                alert("Not a valid IPv4 maskbits");
                                 obj.focus();
-                                ret = false;
-                        }
+                                return false;
+                            }
+			}
+
+			if (ip6Array) {
+                            if ((s[1]<0)||(s[1]>128)) {
+                                alert("Not a valid IPv6 maskbits");
+                                obj.focus();
+                                return false;
+                            }
+			}
                 }
 
 		if (s[0] == "255.255.255.255") {
-			alert("Cannot use 255.255.255.255 as IP network");
+			alert("Cannot use 255.255.255.255 as IPv4 network");
 			obj.focus();
 			ret = false;
 		} else {
-			if (ipArray == null) {
-				alert("Not a valid IP address");
+			if ((ipArray == null) && (ip6Array == null)) {
+				alert("Not a valid IPv4  or IPv6 address");
 				obj.focus();
 				ret = false;
-			} else {
+			} else if (ip6Array == null) {
 				for (var i=0; i<4; i++) {
 					var thisSegment = ipArray[i];
 					if (thisSegment > 255) {
@@ -234,4 +251,3 @@ function _SearchValue(attr_id, vid, vrows, div_id) {
                 $.get(src, func_Results_jq);
         }
 }
-

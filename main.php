@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,12 +19,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 ?>
-
+<script language="JavaScript">
+<!--
+document.getElementById("_search").style="visibility:hidden";
+-->
+</script>
 <div id="main">
 <fieldset class="_collapsible"><legend>Welcome to <?php echo $site_config->{"company_name"}; ?> WebUI</legend>
 <p class="p_body"><?php echo "LEGAL MESSAGE<p>".$site_config->{"message"}; ?></p>
 </fieldset>
 </div>
+
+<div id="dashboard"></div>
 
 <div id="login" class="_table">
        <form name="frmLogon" method="post" action="">
@@ -47,8 +53,6 @@
         </form>
 </div>
 
-<div id="dashboard"></div>
-
 <?php
 
 if ($_MESSAGE) {
@@ -59,8 +63,8 @@ if ($_MESSAGE) {
 	echo "</div>\n";
 }
 
-if ($_ret) {
+//if ($_ret) {
 	echo "<script language=\"javascript\"> document.getElementById(\"login\").style.display=\"none\"; </script>\n";
-}
+//}
 
 ?>

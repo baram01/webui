@@ -1,11 +1,10 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
                                                                                 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,30 +51,37 @@ switch ($option) {
   case 1:
 	if (isset($uid)&&!empty($uid)) {
 	    $sqlcmd = "INSERT INTO user (id, uid, gid, comment, auth, password, enable, arap, pap, chap, mschap, expires, b_author, a_author, svc_dflt, cmd_dflt, maxsess, acl_id, shell, homedir, user, flags";
-	$sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
+	    $sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth,'".hash('sha256',$password)."','".hash('sha256',$enable)."','$arap','".hash('sha256',$pap)."','$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
+//	$sqlcmd .= ") VALUES ($id, '$uid', '$gid', '$comment', $auth, ENCRYPT('$password'),ENCRYPT('$enable'),'$arap',ENCRYPT('$pap'),'$chap','$mschap','$expires','$b_author','$a_author',$svc_dflt,$cmd_dflt,$maxsess,$acl_id,'$shell','$homedir', 1, $flags";
 	    $sqlcmd .= ")";
 	    $result = @SQLQuery("$sqlcmd", $dbi);
 	    if (!@SQLError($dbi)) {
-		echo "<P><font color=\"green\">User($uid) added.</font></P>";
+		echo "<P><font color=\"green\">User(".substr($uid,0,20).") added.</font></P>";
 		Audit("user","add","UID=".$uid,$dbi);
 		if ($prov_config->{'process_prov'}) {
 			Prov_email($uid, $dbi);
 		}
 	    } else {
-		echo "<P><font color=\"red\">User($uid) add failed.</font></P>";
+		echo "<P><font color=\"red\">User(".substr($uid,0,20).") add failed.</font></P>";
 	    }
 	} else {
-		echo "<P><font color=\"red\">Blank User ID cannot be added.</font></P>";
+		echo "<P><font color=\"red\">Blank Username cannot be added.</font></P>";
 	}
 	break;
   case 2:
 	if (!isset($b_author)) $b_author = "";
 	if (!isset($a_author)) $a_author = "";
 	$sqlcmd = "UPDATE user set id=$id, gid='$gid', comment='$comment', auth=$auth, expires='$expires', disable=$disable, b_author='$b_author',a_author='$a_author',svc_dflt=$svc_dflt,cmd_dflt=$cmd_dflt,maxsess=$maxsess,acl_id=$acl_id, shell='$shell', homedir='$homedir'";
-	if ($re_password) $sqlcmd .= ", password=ENCRYPT('$password')";
-	if ($re_enable) $sqlcmd .= ", enable=ENCRYPT('$enable')";
+	if ($re_password) $sqlcmd .= ", password='".crypt($password)."'";
+//	if ($re_password) $sqlcmd .= ", password='".hash('sha256',$password)."'";
+//	if ($re_password) $sqlcmd .= ", password=ENCRYPT('$password')";
+	if ($re_enable) $sqlcmd .= ", enable='".crypt($enable)."'";
+//	if ($re_enable) $sqlcmd .= ", enable='".hash('sha256',$enable)."'";
+//	if ($re_enable) $sqlcmd .= ", enable=ENCRYPT('$enable')";
 	if ($re_arap) $sqlcmd .= ", arap='$arap'";
-	if ($re_pap) $sqlcmd .= ", pap=ENCRYPT('$pap')";
+	if ($re_pap) $sqlcmd .= ", pap='".crypt($pap)."'";
+//	if ($re_pap) $sqlcmd .= ", pap='".hash('sha256',$pap)."'";
+//	if ($re_pap) $sqlcmd .= ", pap=ENCRYPT('$pap')";
 	if ($re_chap) $sqlcmd .= ", chap='$chap'";
 	if ($re_mschap) $sqlcmd .= ", mschap='$mschap'";
 	$sqlcmd .= ", flags=$flags";
@@ -114,20 +120,6 @@ if ($debug) {
 	echo "<a href=\"javascript:_add('_useradd','1','";
 	if ($pass_complex->{'use_temp'}) echo $pass_complex->{'temp_pass'};
 	echo "');\" title=\"Add User\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?><!-- &nbsp; &nbsp;<a class="trig_popup" title="Search for user"><img src="images/search.gif" border="0" width="20"></img></a> --></legend>
-<!--
-<div class="popup_search">
-	<span class="search"</span>
-	<div>
-		<div class="popupClose">&times;</div>
-		<form id="_Search">
-		<table>
-			<tr><td>User:</td><td><input type="text" id="_uid" name="_uid"></td>
-			<tr><td><input type="submit"></td><td>&nbsp;</td>
-		</table>
-		</form>
-	</div>
-</div>
--->
 <table border=0 width="100%">
 <tr><td>
         <div id="_useradd" style="display:none">
@@ -143,7 +135,7 @@ if ($debug) {
 	while ($row = SQLFetchRow($result)) {
 		echo "<option value=\"".$row[0]."\">".$row[0];
 	} ?></td>
-    	<tr><td width="50">User ID:</td><td><input type="text" id="uid" name="uid" size="20"></td>
+    	<tr><td width="50">Username:</td><td><input type="text" id="uid" name="uid" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Group:</td><td><select name=gid size=1 style="width: 150px"><option value=""><?php $result = @SQLQuery("SELECT uid FROM user WHERE user=2", $dbi);
 	while ($row = @SQLFetchRow($result)) {
@@ -151,16 +143,17 @@ if ($debug) {
 		if (isset($group) && ($row[0]==$group)) echo " selected";
 		echo ">".$row[0]."</option>";
 	} ?></select>
-    	<tr><td width="50">Comment:</td><td colspan="4"><input type="text" id="comment" name="comment" size="64">&nbsp;<a href="Javascript:_open_contact(document.userform.uid,document.forms['userform'].elements['comment'])"><img width=25 src="images/identity.gif" border=0></img></a></td>
+    	<tr><td width="50">Comment:</td><td colspan="4"><input type="text" id="comment" name="comment" size="64">&nbsp;<a href="Javascript:_open_contact(document.userform.uid,document.forms['userform'].elements['comment'])" title="Update contact info"><img width=25 src="images/identity.gif" border=0></img></a></td>
     	<tr><td width="50">Auth Meth:</td><td><select name="auth" size="1" style="width: 150px" onchange="_check_method(this)"><?php
 	foreach ($auth_method as $i=>$method) {
 		echo "<option value=\"$i\">$method";
-	} ?></td>
+	} ?></select></td>
 	    <td>&nbsp;&nbsp;</td>
-    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
-	<tr class="_passwords"><td colspan="2">Change Password at next login:&nbsp;&nbsp;<input type="checkbox" name="check_flags" onclick="Javascript:_checked2(this,document.userform.flags,2)"><input type="hidden" name="flags" value="0"></td>
-	    <td>&nbsp;&nbsp;</td>
-	    <td></td><td></td>
+    	    <td width="100">Expires:</td><td><input type="text" name="expires" id="expires" size="20" autocomplete="off"><!-- &nbsp;<a href="Javascript:open_tcalendar(document.forms['userform'].elements['expires']);"><img src="images/cal.gif" width="16" height="16" border="0" alt="Click here to pick a date"></img></a> --></td>
+	<tr class="_passwords"><td colspan="4">Change Password at next login:&nbsp;&nbsp;<input type="checkbox" id="check_flags" name="check_flags" onclick="Javascript:_checked2(this,document.userform.flags,2)"><input type="hidden" name="flags" value="0"></td>
+	    <!-- <td>&nbsp;&nbsp;</td>
+	    <td></td> -->
+	    <td></td>
     	<tr class="_passwords"><td width="50">Password:</td><td><input type="password" id="password" name="password" autocomplete="new-password" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Re-Password:</td><td><input type="password" id="re_password" name="re_password" size="20"></td>
@@ -179,9 +172,9 @@ if ($debug) {
     	<tr class="_passwords"><td width="50">MSCHAP:</td><td><input type="password" id="mschap" name="mschap" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Re-MSCHAP:</td><td><input type="password" id="re_mschap" name="re_mschap" size="20"></td>
-<!--    	<tr><td width="50">Before Authorization:</td><td><input type="hidden" name="b_author" size="20"></td>
+    	<tr style="visibility:collapse"><td width="50">Before Authorization:</td><td><input type="hidden" name="b_author" size="20"></td>
 	    <td>&nbsp;&nbsp;</td>
-    	    <td width="100">After Authorization:</td><td><input type="hidden" name="a_author" size="20"></td> -->
+    	    <td width="100">After Authorization:</td><td><input type="hidden" name="a_author" size="20"></td>
     	<tr><td width="50">Service Default:</td><td><input type="checkbox" name="check_svc_dflt" onclick="Javascript:_checked(this,document.userform.svc_dflt);"><input type="hidden" name="svc_dflt" value="0"></td>
 	    <td>&nbsp;&nbsp;</td>
     	    <td width="100">Command Default:</td><td><input type="checkbox" name="check_cmd_dflt" onclick="Javascript:_checked(this,document.userform.cmd_dflt);"><input type="hidden" name="cmd_dflt" value="0"></td>
@@ -258,15 +251,21 @@ $(document).ready(function() {
 		if (!re.test($(this).val())) {
 			alert("There characters being inputted that are not allowed");
 			$(this).val("");
-			$(this).val();
+			$(this).focus();
 		}
 	});
 
 	$('#password').change(function() {
-		if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+		if ($(this).val() == $('#uid').val()) {
+			alert("You cannot have password and username be the same");
+			$(this).val("");
+			$(this).focus();
+		} else {
+		   if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
 			alert("Minimum password length is "+<?php echo $pass_complex->{'pass_size'}; ?>);
 			$(this).val("");
 			$(this).focus();
+		    }
 		}
 	});
 
@@ -296,6 +295,14 @@ $(document).ready(function() {
 		}
 	});
 
+	$('#pap').change(function() {
+		if ($(this).val().length < <?php echo $pass_complex->{'pass_size'}; ?>) {
+			alert("Minimum pap length is "+<?php echo $pass_complex->{'pass_size'}; ?>);
+			$(this).val("");
+			$(this).focus();
+		}
+	});
+
 	$('#re_pap').change(function() {
 		if ($('#pap').val() != $(this).val()) {
 			alert("PAP does not match");
@@ -317,7 +324,7 @@ $(document).ready(function() {
 		var msg = "";
 
 		if ($('#uid').val()=="") {
-			msg += "User ID cannot be blank";
+			msg += "Username cannot be blank";
 			$('#uid').focus();
 			p = true;
 		}
@@ -356,5 +363,20 @@ $(document).ready(function() {
 	});
 
 	$( "#expires" ).datetimepicker({dateFormat:'yy-mm-dd', timeInput: true, showHour:false, showMinute:false, showSecond:false, timeFormat: 'HH:mm:ss'});
+
+	$('#search').change(function() {
+		var new_src = src;
+		if ($(this).val()) {
+			var _s = $(this).val().indexOf("=");
+			if (_s > 0) {
+				new_src += "&"+$(this).val();
+			} else {
+				new_src += "&user="+$(this).val();
+			}
+		}
+		$.get(new_src, function (data, status) {
+			document.getElementById("_results0").innerHTML = data;
+		});
+	});
 });
 </script>

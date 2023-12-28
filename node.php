@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2019 3 Youngs, Inc
+    Copyright (C) 2003-2021 3 Youngs, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,15 +31,15 @@ if (checkLoginXML($_COOKIE["login"],$dbi) < 5) {
 ?>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <style>
 .ui-autocomplete-loading {
     background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 }
 </style>
-<script src="js/jquery.js"></script>
-<script src="js/jquery-ui/jquery-ui.js"></script>
+<script src="js/jquery-2.2.4.js"></script>
+<script src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
 <script src="js/tacacs.js"></script>
 </head>
 <body>

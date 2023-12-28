@@ -77,7 +77,7 @@ function _checkProvReq() {
 	    <td><input name="process_prov" type="checkbox" <?php if ($prov_config->{'process_prov'}) { echo "checked"; } ?>></td>
 	    <td></td></tr>
 	<tr><td>Secure:</td>
-	    <td><input name="mail_secure" type="checkbox" <?php if ($prov_config->{'mail_secure'}) { echo "checked"; } ?>></td>
+	    <td><input id="mail_secure" name="mail_secure" type="checkbox" <?php if ($prov_config->{'mail_secure'}) { echo "checked"; } ?>></td>
 	    <td></td></tr>
 	<tr><td>Mail Relay:</td>
 	    <td><input id="mail_relay" name="mail_relay" type="text" size=30 value="<?php echo $prov_config->{'mail_relay'}; ?>" onchange="_verify(this,'server')"></td>
@@ -109,6 +109,13 @@ function _checkProvReq() {
 
 <script>
 $(document).ready(function() {
+	$('#mail_secure').click(function() {
+		if (this.checked) {
+			$('#mail_relay_port').val("465");
+		} else {
+			$('#mail_relay_port').val("25");
+		}
+	});
         $('#mail_relay').change(function() {
                 var re =  /^\w+([\.-_]?\w+)*(\.\w{2,3})+$/;
                 if (!re.test($(this).val())) {

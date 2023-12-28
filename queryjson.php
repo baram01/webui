@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2019  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ $dbi=OpenDatabase($db_config);
 
 if (checkLoginXML($_COOKIE["login"],$dbi) < 5) {
 	CloseDatabase($dbi);
-	return;
+	exit(1);
 }
 
 $sqlcmd = "";
@@ -74,6 +74,7 @@ case "attribute":
 		$where = "WHERE vid=$vid";
 	}
 	break;
+
 case "command":
 	$fields = "id, name";
 	if (isset($term)) {
@@ -105,8 +106,30 @@ case "admin":
         }
         break;
 
-case "value":
-	$fields = "";
+case "attr_value":
+	$fields = "value, option";
+	if (isset($term)) {
+		if (is_numeric($term)) {
+			$where = "WHERE value = ".$term;
+		} else {
+			$where = "WHERE option RLIKE '".$term.".*'";
+		}
+		if (isset($vid)) {
+			if ($vid) {
+				$where .= " AND (vid=$vid OR vid=0)";
+			} else {
+				$where .= " AND vid=0";
+			}
+		}
+		if (isset($attrid)) {
+			if ($attrid) {
+				$where .= " AND attrid=$attrid";
+			}
+		}
+	} else {
+		$where = "WHERE vid=$vid AND attrid=$attrid";
+	}
+	$where .= " ORDER BY value ASC";
 	break;
 
 }
@@ -139,6 +162,5 @@ if ($numrows > 0) {
 	}
 	echo $output;
 }
-
 CloseDatabase($dbi);
 ?>

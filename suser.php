@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2003-2020 Young Consulting, Inc
+    Copyright (C) 2003-2021 Young Consulting, Inc
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,10 +37,13 @@ switch ($option) {
 		$result = SQLQuery("SELECT uid FROM user WHERE uid='$uid'", $dbi);
 		if (SQLNumRows($result) > 0) {
 			$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,"",$priv_lvl,1,$a_vrows,$disable,$expire);
-		} else { $_ERROR="User ($uid) not found"; }
+		} else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 		if ($expire=="") $expire="0000-00-00 00:00:00";
-		$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,unixcrypt($password),$priv_lvl,0,$a_vrows,$disable,$expire);
+	//	$c_password = crypt($password);
+		$c_password = hash('sha256',$password);
+	//	$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,unixcrypt($password),$priv_lvl,0,$a_vrows,$disable,$expire);
+		$sqlcmd = sprintf("INSERT INTO admin (uid, comment, password, priv_lvl, link, vrows, disable, expire) VALUES ('%s','%s','%s',%d, %d, %d, %d, '%s')",$uid,$comment,$c_password,$priv_lvl,0,$a_vrows,$disable,$expire);
 	}
 	break;
 
@@ -50,10 +53,11 @@ switch ($option) {
 		$result = @SQLQuery("SELECT uid FROM user WHERE uid='$uid'", $dbi);
 		if (@SQLNumRows($result) > 0) {
 			$sqlcmd = "UPDATE admin set comment='$comment', priv_lvl=$priv_lvl, link=1, vrows=$a_vrows, disable=$disable, expire='$expire' WHERE uid='$uid'";
-		 } else { $_ERROR="User ($uid) not found"; }
+		 } else { $_ERROR="Admin User ($uid) not found"; }
 	} else {
 //		if ($re_password) $re_password = ", password=ENCRYPT('$password')";
-		if ($re_password) $re_password = ", password='".unixcrypt($password)."'";
+	//	if ($re_password) $re_password = ", password='".unixcrypt($password)."'";
+		if ($re_password) $re_password = ", password='".hash('sha256',$password)."'";
 		$sqlcmd = "UPDATE admin set comment='$comment', priv_lvl=$priv_lvl, link=0, vrows=$a_vrows, disable=$disable, expire='$expire' $re_password WHERE uid='$uid'";
 	}
 	break;
@@ -80,7 +84,7 @@ function _checkRequired() {
         var msg = "";
 
         if (!form.uid.value ) {
-                msg = msg + " Missing User ID.\n";
+                msg = msg + " Missing Username.\n";
 		form.uid.focus();
         }
 
@@ -174,48 +178,61 @@ function _delete(uid) {
 //-->
 </script>
 <form name="userform" method="post" action="?menu=system&module=suser">
-<fieldset class="_collapsible"><legend>System Users <?php if ($_ret > 9) { echo "<a href=\"javascript:_add('_userAdd')\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?></legend>
+<fieldset class="_collapsible"><legend>System Admin Users <?php if ($_ret > 9) { echo "<a href=\"javascript:_add('_userAdd')\"><img src=\"images/plus-new.gif\" border=\"0\" /></a>"; } ?></legend>
 <table border=0 width="100%">
 <tr><td>
         <div id="_userAdd" style="display:none">
         <fieldset class="_collapsible">
 	<table class="_table">
-	<tr><td>Disable:</td><td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
-	    <td>Expire</td><td><input name="expire" id="expire" type="text"></td></tr>
-	<tr><td>User ID:</td><td><input id="uid" name="uid" type="text" size="25"></td>
-	    <td></td><td></td></tr>
-	<tr><td>Comment:</td><td colspan="2"><input id="comment" name="comment" type="text" size="50"></td>
-	    <td></td><td></td></tr>
-	<tr><td>Password:</td><td><input name="password" type="password" size="25"></td>
-	    <td>Re-Password:</td><td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
-	<tr><td>Privelege:</td><td><select name="priv_lvl">
-					<option value="1">1 - Report Only</option>
-					<option value="5">5 - View</option>
-					<option value="10">10 - Update</option>
-					<option value="15">15 - Super User</option>
-				   </select>
-			  </td>
-	    <td></td><td></td></tr>
-	<tr><td>Linked:</td><td><input name="admlink" type="checkbox"></td>
-	    <td><input type="hidden" name="link"></td><td></td></tr>
-	<tr><td>Rows to view:</td><td><select name="a_vrows">
+	<tr><td>Disable:</td>
+	    <td><input id="d_link" name="d_link" type="checkbox"><input id="disable" name="disable" type="hidden"></td>
+	    <td>Expire:</td>
+	    <td><input name="expire" id="expire" type="text" autocomplete="off"> <font size=-2>eg. 2021-01-09 00:00:00</font></td></tr>
+	<tr><td>Username:</td>
+	    <td><input id="uid" name="uid" type="text" size="25"></td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td>Comment:</td>
+	    <td colspan="3"><input id="comment" name="comment" type="text" size="50"></td> </tr>
+	<tr><td>Linked:</td>
+	    <td><input name="admlink" type="checkbox"></td>
+	    <td><input type="hidden" name="link"></td>
+	    <td></td></tr>
+	<tr class="_passwords"><td>Password:</td>
+	    <td><input name="password" type="password" size="25"></td>
+	    <td>Re-Password:</td>
+	    <td><input name="re_password" type="password" size="25" onBlur="javascript:return _checkpass(this,document.forms['userform'].elements['password']);"></td></tr>
+	<tr><td>Privelege:</td>
+	    <td><select name="priv_lvl">
+		<option value="1">1 - Report Only</option>
+		<option value="5">5 - View</option>
+		<option value="10">10 - Update</option>
+		<option value="15">15 - Super User</option>
+		</select> </td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td>Rows to view:</td>
+	    <td><select name="a_vrows">
 <?php foreach($_vrows as $_item) {
 	if (!$_item) {
-echo "					<option value=\"$_item\">all</option>";
+echo "			<option value=\"$_item\">all</option>";
 	} else {
-echo "					<option value=\"$_item\">$_item</option>";
+echo "			<option value=\"$_item\">$_item</option>";
 	}
       } ?>
-				  </select></td>
-	    <td></td><td></td></tr>
-	<tr><td><input name="option" value="1" type="hidden"></td><td><input type="submit" name="_submit" value="Add" onClick="return _checkRequired();"></td>
-	    <td></td><td></td></tr>
+		</select></td>
+	    <td></td>
+	    <td></td></tr>
+	<tr><td><input name="option" value="1" type="hidden"></td>
+	    <td><input type="submit" name="_submit" value="Add" onClick="return _checkRequired();"></td>
+	    <td></td>
+	    <td></td></tr>
 	</table>
 	</fieldset>
 	</div>
 </td></tr>
 <tr>
-	<td><div id="_status"></div></td>
+	<td><div id="_result0"></div></td>
 </tr>
 </table>
 </fieldset>
@@ -244,7 +261,22 @@ $(document).ready(function() {
 
 	var src = "result.php?_ret="+admin_priv_lvl+"&_table=admin&vrows="+admin_vrows;
 	$.get(src, function (data, status) {
-		document.getElementById("_status").innerHTML = data;
+		document.getElementById("_result0").innerHTML = data;
 	});
+
+        $('#search').change(function() {
+                var new_src = src;
+                if ($(this).val()) {
+                        var _s = $(this).val().indexOf("=");
+                        if (_s > 0) {
+                                new_src += "&"+$(this).val();
+                        } else {
+                                new_src += "&user="+$(this).val();
+                        }
+                }
+                $.get(new_src, function (data, status) {
+                        document.getElementById("_result0").innerHTML = data;
+                });
+        });
 });
 </script>

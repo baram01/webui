@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2020  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,12 +34,18 @@ switch ($option) {
 	$result = @SQLQuery("INSERT INTO contact_info (uid, fname, surname, address1, address2, address3, phone, email) VALUES ('$uid', '$fname', '$surname', '$address1', '$address2', '$address3', '$phone', '$email')", $dbi);
 
 	$result = @SQLQuery("UPDATE user SET comment='$fname $surname' WHERE uid='$uid'", $dbi);
+	Audit("contact","add","UID=".$uid,$dbi);
 	break;
    case 2:
 	$result = @SQLQuery("UPDATE contact_info SET fname='$fname', surname='$surname', address1='$address1', address2='$address2', address3='$address3', phone='$phone', email='$email' WHERE uid='$uid'", $dbi);
 
 	$result = @SQLQuery("UPDATE user SET comment='$fname $surname' WHERE uid='$uid'", $dbi);
+	Audit("contact","change","UID=".$uid,$dbi);
 	break;
+   case 3:
+	Audit("contact","delete","UID=".$uid,$dbi);
+	break;
+	
 }
 
 $row = array();
@@ -56,12 +62,12 @@ if (SQLNumRows($result) > 0) {
 <head>
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <link rel="stylesheet" type="text/css" href="css/style-addition.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="js/jquery-ui/jquery-ui.theme.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.12.1/jquery-ui.theme.css">
 </head>
 <body>
 <script language="JavaScript" src="js/tacacs.js"></script>
-<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-2.2.4.js"></script>
 <script language="Javascript">
 <!--
 function _require() {
@@ -93,11 +99,10 @@ if (isset($update)) {
 	    <td colspan="2"><input name="address3" id="address3" type="text" size="66" value="<?php if (isset($row["address3"])) echo $row["address3"]; ?>"></td>
 	</tr>
 	<tr><td>Phone:</td>
-	    <td><input name="phone" id="phone" type="text" size="20" value="<?php if (isset($row["phone"])) echo $row["phone"]; ?>"></td>
-	    <td></td>
+	    <td colspan="2"><input name="phone" id="phone" type="text" size="20" value="<?php if (isset($row["phone"])) echo $row["phone"]; ?>"> <font size=-1>eg. +1 222-333-4444</font></td>
 	</tr>
 	<tr><td>Email:</td>
-	    <td colspan="2"><input name="email" id="email" type="text" size="66" value="<?php if (isset($row["email"])) echo $row["email"]; ?>" onchange="_verify(this,'email')"></td>
+	    <td colspan="2"><input name="email" id="email" type="text" size="66" value="<?php if (isset($row["email"])) echo $row["email"]; ?>"></td>
 	</tr>
 	<tr><td><input name="option" type="hidden" value="<?php echo $option; ?>"></td>
 	    <td><input name="_submit" type="submit" value="<?php if ($option==1) echo "Add"; else echo "Modify"; ?>" onClick="return _require();">&nbsp;<input type="reset" onClick="return confirm('Are you sure that you want to reset?');"></td>
@@ -142,7 +147,6 @@ $(document).ready(function() {
                 var re = /^[a-zA-Z0-9.!#$%&'*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
                 if (!re.test($(this).val())) {
                         alert("Not a valid email");
-                        $(this).val("");
                         $(this).focus();
                 }
         });

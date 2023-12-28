@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2019  Young Consulting, Inc
+    Copyright (C) 2021  Young Consulting, Inc
                                                                                                                                                                  
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ case "vendor":
 	$where = "WHERE id='$vid'";
 	break;
 case "host":
+	$fields = "ip, name, hostgroup, hkey, enable, prompt, loginacl, enableacl, host, vendor";
 	$where = "WHERE ip='$ip' and host=$host";
 	break;
 case "acl":
@@ -95,7 +96,6 @@ case "node":
 	break;
 }
 
-
 $result = @SQLQuery("SELECT $fields FROM $table $where", $dbi);
 $numrows = @SQLNumRows($result);
 if ($numrows > 0) {
@@ -103,8 +103,9 @@ if ($numrows > 0) {
 	while ($row=SQLFetchArray($result)) {
 		$oXML->push("row");
 		foreach ($row as $key => $value) {
-			if (!is_numeric($key))
+			if (!is_numeric($key)) {
 				$oXML->element("$key",$value);
+			}
 		}
 		$oXML->pop();
 	}
