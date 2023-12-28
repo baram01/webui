@@ -14,7 +14,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-'''
+```
 Application:	WebUI
 Author:		Andrew Young (baram01@hotmail.com)
 Date:		01.03.2009
@@ -43,4 +43,4 @@ Installation:
 	6) Copy company logo from /tmp to [webui directory]/cust
 	7) If redundant DB, take the information from /tmp/config.php and update [webui directory]/cust/db_config.json
 	8) Log into new webui.  Go to System and configure your way.
-'''
+```
